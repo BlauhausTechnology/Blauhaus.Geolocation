@@ -4,4 +4,12 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Blauhaus.DeviceServices" Version="0.7.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blauhaus.Geolocation.Abstractions\Blauhaus.Geolocation.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
