@@ -1,4 +1,5 @@
 ﻿using Blauhaus.Geolocation.Abstractions;
+using Blauhaus.Geolocation.Abstractions.Service;
 using Blauhaus.Geolocation.Proxy;
 using Blauhaus.Reactive._Ioc;
 using Microsoft.Extensions.DependencyInjection;

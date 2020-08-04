@@ -8,6 +8,9 @@ using Blauhaus.DeviceServices.Abstractions.Thread;
 using Blauhaus.Errors;
 using Blauhaus.Errors.Extensions;
 using Blauhaus.Geolocation.Abstractions;
+using Blauhaus.Geolocation.Abstractions.Errors;
+using Blauhaus.Geolocation.Abstractions.Service;
+using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.Geolocation.Extensions;
 using Blauhaus.Geolocation.Proxy;
 using Blauhaus.Reactive.Abstractions.Schedulers;
@@ -18,20 +21,17 @@ namespace Blauhaus.Geolocation
     {
         private readonly IAnalyticsService _analyticsService;
         private readonly IDevicePermissionsService _devicePermissionsService;
-        private readonly IThreadService _threadService;
         private readonly IReactiveSchedulers _schedulers;
         private readonly IGeolocationProxy _proxy;
 
         public GeolocationService(
             IAnalyticsService analyticsService,
             IDevicePermissionsService devicePermissionsService,
-            IThreadService threadService,
             IReactiveSchedulers schedulers,
             IGeolocationProxy proxy)
         {
             _analyticsService = analyticsService;
             _devicePermissionsService = devicePermissionsService;
-            _threadService = threadService;
             _schedulers = schedulers;
             _proxy = proxy;
         }
@@ -113,9 +113,7 @@ namespace Blauhaus.Geolocation
                     {
                         try
                         {
-                            var location = await _threadService.InvokeOnMainThreadAsync(async 
-                                () => await _proxy.GetCurrentLocationAsync(requiredAccuracy.ToGeoLocationRequest()));
-                            
+                            var location = await _proxy.GetCurrentLocationAsync(requiredAccuracy.ToGeoLocationRequest());
                             if (location == null)
                             {
                                 _analyticsService.TraceWarning(this, "Updated location is null");

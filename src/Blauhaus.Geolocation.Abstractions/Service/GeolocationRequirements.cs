@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Blauhaus.Geolocation.Abstractions
+namespace Blauhaus.Geolocation.Abstractions.Service
 {
     public class GeolocationRequirements
     {

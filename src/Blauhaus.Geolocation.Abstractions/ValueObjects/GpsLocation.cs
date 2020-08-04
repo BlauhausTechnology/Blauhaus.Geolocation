@@ -1,9 +1,10 @@
 ﻿using System;
 using Blauhaus.Common.ValueObjects._Base;
 using Blauhaus.Errors.Extensions;
+using Blauhaus.Geolocation.Abstractions.Errors;
 using CSharpFunctionalExtensions;
 
-namespace Blauhaus.Geolocation.Abstractions
+namespace Blauhaus.Geolocation.Abstractions.ValueObjects
 {
     public class GpsLocation : BaseValueObject<GpsLocation>, IGpsLocation
     {

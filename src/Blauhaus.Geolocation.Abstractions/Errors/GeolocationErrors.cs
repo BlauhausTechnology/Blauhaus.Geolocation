@@ -1,6 +1,6 @@
 ﻿using Blauhaus.Errors;
 
-namespace Blauhaus.Geolocation.Abstractions
+namespace Blauhaus.Geolocation.Abstractions.Errors
 {
     public static class GeolocationErrors
     {

@@ -8,6 +8,7 @@ using Blauhaus.DeviceServices.Abstractions.Permissions;
 using Blauhaus.DeviceServices.Abstractions.Thread;
 using Blauhaus.DeviceServices.TestHelpers.MockBuilders;
 using Blauhaus.Geolocation.Abstractions;
+using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.Geolocation.Proxy;
 using Blauhaus.Geolocation.Tests.MockBuilders;
 using Blauhaus.Reactive.TestHelpers._Ioc;
@@ -44,7 +45,6 @@ namespace Blauhaus.Geolocation.Tests.Tests._Base
         protected AnalyticsServiceMockBuilder MockAnalyticsService => AddMock<AnalyticsServiceMockBuilder, IAnalyticsService>().Invoke();
         protected DevicePermissionsServiceMockBuilder MockDevicePermissionsService => AddMock<DevicePermissionsServiceMockBuilder, IDevicePermissionsService>().Invoke();
         protected ReactiveSchedulersMockBuilder MockReactiveSchedulers => Mocks.AddMockReactiveSchedulers();
-        //protected ThreadServiceMockBuilder MockThreadService => Mocks.AddMock<ThreadServiceMockBuilder, IThreadService>().Invoke();
 
     }
 }
