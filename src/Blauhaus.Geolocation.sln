@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blauhaus.Geolocation.TestHe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blauhaus.Geolocation", "Blauhaus.Geolocation\Blauhaus.Geolocation.csproj", "{BB279DCC-4C8C-401A-AD82-3EB903C8B351}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blauhaus.Geolocation.Abstractions", "Blauhaus.Geolocation.Abstractions\Blauhaus.Geolocation.Abstractions.csproj", "{CAC61F9B-E850-409E-8463-7AB07F5D1EDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blauhaus.Geolocation.Abstractions", "Blauhaus.Geolocation.Abstractions\Blauhaus.Geolocation.Abstractions.csproj", "{CAC61F9B-E850-409E-8463-7AB07F5D1EDA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A5E2D99-CC45-4048-B2E2-4341C5C4EE51}"
+	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\blauhaus.yml = ..\.github\workflows\blauhaus.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
