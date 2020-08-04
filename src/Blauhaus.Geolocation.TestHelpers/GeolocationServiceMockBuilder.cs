@@ -13,6 +13,11 @@ namespace Blauhaus.Geolocation.TestHelpers
     public class GeolocationServiceMockBuilder : BaseMockBuilder<GeolocationServiceMockBuilder, IGeolocationService>
     {
 
+        public GeolocationServiceMockBuilder()
+        {
+            Where_Connect_returns(new GpsLocation(1, 2));
+        }
+
         public GeolocationServiceMockBuilder Where_Connect_returns(IGpsLocation location)
         {
             Mock.Setup(x => x.Connect(It.IsAny<GeolocationRequirements>()))
