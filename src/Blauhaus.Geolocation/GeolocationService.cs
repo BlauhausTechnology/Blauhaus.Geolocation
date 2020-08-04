@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using Blauhaus.Analytics.Abstractions.Extensions;
 using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.DeviceServices.Abstractions.Permissions;
+using Blauhaus.DeviceServices.Abstractions.Thread;
 using Blauhaus.Errors;
 using Blauhaus.Errors.Extensions;
 using Blauhaus.Geolocation.Abstractions;
@@ -17,17 +18,20 @@ namespace Blauhaus.Geolocation
     {
         private readonly IAnalyticsService _analyticsService;
         private readonly IDevicePermissionsService _devicePermissionsService;
+        private readonly IThreadService _threadService;
         private readonly IReactiveSchedulers _schedulers;
         private readonly IGeolocationProxy _proxy;
 
         public GeolocationService(
             IAnalyticsService analyticsService,
             IDevicePermissionsService devicePermissionsService,
+            IThreadService threadService,
             IReactiveSchedulers schedulers,
             IGeolocationProxy proxy)
         {
             _analyticsService = analyticsService;
             _devicePermissionsService = devicePermissionsService;
+            _threadService = threadService;
             _schedulers = schedulers;
             _proxy = proxy;
         }
@@ -42,6 +46,12 @@ namespace Blauhaus.Geolocation
 
             return Observable.Create<IGpsLocation>(async observer =>
             {
+
+                var geolocationRequest = requiredAccuracy.ToGeoLocationRequest();
+
+                var disposable = new CompositeDisposable();
+
+                
                 var permissions = await _devicePermissionsService.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse);
                 if (permissions.IsFailure)
                 {
@@ -49,9 +59,6 @@ namespace Blauhaus.Geolocation
                     observer.OnError(new ErrorException(permissions));
                 }
 
-                var geolocationRequest = requiredAccuracy.ToGeoLocationRequest();
-
-                var disposable = new CompositeDisposable();
 
                 try
                 {
@@ -106,7 +113,9 @@ namespace Blauhaus.Geolocation
                     {
                         try
                         {
-                            var location = await _proxy.GetCurrentLocationAsync(requiredAccuracy.ToGeoLocationRequest());
+                            var location = await _threadService.InvokeOnMainThreadAsync(async 
+                                () => await _proxy.GetCurrentLocationAsync(requiredAccuracy.ToGeoLocationRequest()));
+                            
                             if (location == null)
                             {
                                 _analyticsService.TraceWarning(this, "Updated location is null");

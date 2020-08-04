@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.Analytics.TestHelpers;
 using Blauhaus.DeviceServices.Abstractions.Permissions;
+using Blauhaus.DeviceServices.Abstractions.Thread;
 using Blauhaus.DeviceServices.TestHelpers.MockBuilders;
 using Blauhaus.Geolocation.Abstractions;
 using Blauhaus.Geolocation.Proxy;
@@ -34,6 +36,7 @@ namespace Blauhaus.Geolocation.Tests.Tests._Base
             AddService(MockAnalyticsService.Object);
             AddService(MockDevicePermissionsService.Object);
             AddService(MockReactiveSchedulers.Object);
+            AddService<IThreadService>(x => new FakeThreadService());
         }
 
         
@@ -41,6 +44,7 @@ namespace Blauhaus.Geolocation.Tests.Tests._Base
         protected AnalyticsServiceMockBuilder MockAnalyticsService => AddMock<AnalyticsServiceMockBuilder, IAnalyticsService>().Invoke();
         protected DevicePermissionsServiceMockBuilder MockDevicePermissionsService => AddMock<DevicePermissionsServiceMockBuilder, IDevicePermissionsService>().Invoke();
         protected ReactiveSchedulersMockBuilder MockReactiveSchedulers => Mocks.AddMockReactiveSchedulers();
+        //protected ThreadServiceMockBuilder MockThreadService => Mocks.AddMock<ThreadServiceMockBuilder, IThreadService>().Invoke();
 
     }
 }
