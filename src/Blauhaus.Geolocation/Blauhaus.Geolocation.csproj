@@ -5,7 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blauhaus.DeviceServices" Version="0.7.6" />
+    <PackageReference Include="Blauhaus.DeviceServices" Version="0.7.9" />
+    <PackageReference Include="Blauhaus.DeviceServices.Abstractions" Version="0.7.9" />
     <PackageReference Include="Blauhaus.Reactive" Version="0.0.2" />
   </ItemGroup>
 
