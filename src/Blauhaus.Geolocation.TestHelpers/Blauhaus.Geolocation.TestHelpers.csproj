@@ -4,4 +4,12 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Blauhaus.Reactive.TestHelpers" Version="0.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Blauhaus.Geolocation.Abstractions\Blauhaus.Geolocation.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>
