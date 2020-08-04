@@ -324,7 +324,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             [Test]
             public async Task IF_location_returned_is_invalid_SHOULD_error()
             {
-                //Arrange
+                //Arrange 
                 var result1 = new TaskCompletionSource<IGpsLocation>();
                 var result2 = new TaskCompletionSource<Exception>(); 
 
