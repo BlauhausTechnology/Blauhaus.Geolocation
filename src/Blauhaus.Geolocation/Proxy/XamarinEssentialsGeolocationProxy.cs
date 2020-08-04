@@ -9,5 +9,11 @@ namespace Blauhaus.Geolocation.Proxy
         {
             return Xamarin.Essentials.Geolocation.GetLastKnownLocationAsync();
         }
+
+        public Task<Location> GetCurrentLocationAsync(GeolocationRequest request)
+        {
+            return Xamarin.Essentials.Geolocation.GetLocationAsync(request);
+        }
+
     }
 }
