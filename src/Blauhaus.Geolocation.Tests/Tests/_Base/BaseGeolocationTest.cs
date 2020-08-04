@@ -36,7 +36,7 @@ namespace Blauhaus.Geolocation.Tests.Tests._Base
             AddService(MockAnalyticsService.Object);
             AddService(MockDevicePermissionsService.Object);
             AddService(MockReactiveSchedulers.Object);
-            AddService<IThreadService>(x => new FakeThreadService());
+            AddService<IThreadService>(x => new DummyThreadService());
         }
 
         
