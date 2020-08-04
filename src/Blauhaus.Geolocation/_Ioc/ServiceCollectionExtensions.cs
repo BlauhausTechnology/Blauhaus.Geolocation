@@ -1,5 +1,6 @@
 ﻿using Blauhaus.Geolocation.Abstractions;
 using Blauhaus.Geolocation.Proxy;
+using Blauhaus.Reactive._Ioc;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Blauhaus.Geolocation._Ioc
@@ -10,6 +11,7 @@ namespace Blauhaus.Geolocation._Ioc
         {
             services.AddSingleton<IGeolocationService, GeolocationService>();
             services.AddTransient<IGeolocationProxy, XamarinEssentialsGeolocationProxy>();
+            services.AddReactiveScheduler();
             return services;
         }
     }
