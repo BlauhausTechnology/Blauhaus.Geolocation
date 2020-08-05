@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xamarin.Essentials;
 
 namespace Blauhaus.Geolocation.Proxy
@@ -7,5 +8,8 @@ namespace Blauhaus.Geolocation.Proxy
     {
         Task<Location> GetLastKnownLocationAsync();
         Task<Location> GetCurrentLocationAsync(GeolocationRequest request);
+
+        Task<IEnumerable<Location>> GetLocationsFromAddressAsync(string address);
+        Task<IEnumerable<Placemark>> GetPlacemarksFromLocationAsync(Location location);
     }
 }

@@ -5,6 +5,8 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Blauhaus.Errors;
 using Blauhaus.Geolocation.Abstractions;
+using Blauhaus.Geolocation.Abstractions.Service;
+using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.TestHelpers.MockBuilders;
 using Moq;
 
@@ -18,10 +20,10 @@ namespace Blauhaus.Geolocation.TestHelpers
             Where_Connect_returns(new GpsLocation(1, 2));
         }
 
-        public GeolocationServiceMockBuilder Where_Connect_returns(IGpsLocation location)
+        public GeolocationServiceMockBuilder Where_Connect_returns(GpsLocation location)
         {
             Mock.Setup(x => x.Connect(It.IsAny<GeolocationRequirements>()))
-                .Returns(Observable.Create<IGpsLocation>(observer =>
+                .Returns(Observable.Create<GpsLocation>(observer =>
                 {
                     observer.OnNext(location);
                     return Disposable.Empty;
@@ -29,11 +31,11 @@ namespace Blauhaus.Geolocation.TestHelpers
             return this;
         }
 
-        public GeolocationServiceMockBuilder Where_Connect_returns_sequence(IEnumerable<IGpsLocation> locations)
+        public GeolocationServiceMockBuilder Where_Connect_returns_sequence(IEnumerable<GpsLocation> locations)
         {
-            var queue = new Queue<IGpsLocation>(locations);
+            var queue = new Queue<GpsLocation>(locations);
             Mock.Setup(x => x.Connect(It.IsAny<GeolocationRequirements>()))
-                .Returns(Observable.Create<IGpsLocation>(observer =>
+                .Returns(Observable.Create<GpsLocation>(observer =>
                 {
                     observer.OnNext(queue.Dequeue());
                     return Disposable.Empty;
@@ -44,7 +46,7 @@ namespace Blauhaus.Geolocation.TestHelpers
         public GeolocationServiceMockBuilder Where_Connect_returns_exception(Exception e)
         {
             Mock.Setup(x => x.Connect(It.IsAny<GeolocationRequirements>()))
-                .Returns(Observable.Create<IGpsLocation>(observer =>
+                .Returns(Observable.Create<GpsLocation>(observer =>
                 {
                     observer.OnError(e);
                     return Disposable.Empty;
@@ -55,7 +57,7 @@ namespace Blauhaus.Geolocation.TestHelpers
         public GeolocationServiceMockBuilder Where_Connect_returns_error(Error e)
         {
             Mock.Setup(x => x.Connect(It.IsAny<GeolocationRequirements>()))
-                .Returns(Observable.Create<IGpsLocation>(observer =>
+                .Returns(Observable.Create<GpsLocation>(observer =>
                 {
                     observer.OnError(new ErrorException(e));
                     return Disposable.Empty;
@@ -65,10 +67,10 @@ namespace Blauhaus.Geolocation.TestHelpers
 
 
         
-        public Action<IGpsLocation> Where_Location_can_be_updated()
+        public Action<GpsLocation> Where_Location_can_be_updated()
         {
             Mock.Setup(x => x.Connect(It.IsAny<GeolocationRequirements>()))
-                .Returns(Observable.Create<IGpsLocation>(observer =>
+                .Returns(Observable.Create<GpsLocation>(observer =>
                 {
                     void Update(object sender, LocationUpdatedEventArgs args)
                     {
@@ -88,12 +90,12 @@ namespace Blauhaus.Geolocation.TestHelpers
         private event EventHandler<LocationUpdatedEventArgs> UpdateEvent;
         private class LocationUpdatedEventArgs : EventArgs
         {
-            public LocationUpdatedEventArgs(IGpsLocation newLocation)
+            public LocationUpdatedEventArgs(GpsLocation newLocation)
             {
                 NewLocation = newLocation;
             }
 
-            public IGpsLocation NewLocation { get; }
+            public GpsLocation NewLocation { get; }
         }
 
     }

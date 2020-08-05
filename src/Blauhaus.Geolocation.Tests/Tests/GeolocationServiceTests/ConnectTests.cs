@@ -6,6 +6,9 @@ using Blauhaus.DeviceServices.Abstractions.Permissions;
 using Blauhaus.Errors;
 using Blauhaus.Errors.Extensions;
 using Blauhaus.Geolocation.Abstractions;
+using Blauhaus.Geolocation.Abstractions.Errors;
+using Blauhaus.Geolocation.Abstractions.Service;
+using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.Geolocation.Tests.Tests._Base;
 using CSharpFunctionalExtensions;
 using Microsoft.Reactive.Testing;
@@ -91,7 +94,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             { 
                 //Act
                 Sut.Connect(_requirements)
-                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<IGpsLocation> {next}); });
+                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<GpsLocation> {next}); });
                 var locations = await LocationTaskCompletionSource.Task;
 
                 //Assert
@@ -161,7 +164,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             { 
                 //Act
                 Sut.Connect(_requirements)
-                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<IGpsLocation> {next}); });
+                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<GpsLocation> {next}); });
                 
                 var locations = await LocationTaskCompletionSource.Task;
 
@@ -225,7 +228,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
 
                 //Act
                 Sut.Connect(new GeolocationRequirements(TimeSpan.FromTicks(1), given))
-                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<IGpsLocation> {next}); });
+                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<GpsLocation> {next}); });
                 await LocationTaskCompletionSource.Task;
 
                 //Assert
@@ -255,9 +258,9 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                     new Location(2,4),
                     new Location(3,6),
                 }); 
-                var result1 = new TaskCompletionSource<IGpsLocation>();
-                var result2 = new TaskCompletionSource<IGpsLocation>();
-                var result3 = new TaskCompletionSource<IGpsLocation>();
+                var result1 = new TaskCompletionSource<GpsLocation>();
+                var result2 = new TaskCompletionSource<GpsLocation>();
+                var result3 = new TaskCompletionSource<GpsLocation>();
                 var count = 0;
 
                 //Act
@@ -292,7 +295,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             public async Task IF_location_throws_exception_SHOULD_error()
             {
                 //Arrange
-                var result1 = new TaskCompletionSource<IGpsLocation>();
+                var result1 = new TaskCompletionSource<GpsLocation>();
                 var result2 = new TaskCompletionSource<Exception>(); 
 
                 //Act
@@ -325,7 +328,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             public async Task IF_location_returned_is_invalid_SHOULD_error()
             {
                 //Arrange 
-                var result1 = new TaskCompletionSource<IGpsLocation>();
+                var result1 = new TaskCompletionSource<GpsLocation>();
                 var result2 = new TaskCompletionSource<Exception>(); 
 
                 //Act

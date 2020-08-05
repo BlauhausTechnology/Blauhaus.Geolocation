@@ -1,4 +1,4 @@
-﻿namespace Blauhaus.Geolocation.Abstractions
+﻿namespace Blauhaus.Geolocation.Abstractions.Service
 {
     public enum LocationAccuracy
     {
