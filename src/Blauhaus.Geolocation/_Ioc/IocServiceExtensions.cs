@@ -1,4 +1,5 @@
 ﻿using Blauhaus.Geolocation.Abstractions;
+using Blauhaus.Geolocation.Abstractions.Service;
 using Blauhaus.Geolocation.Proxy;
 using Blauhaus.Ioc.Abstractions;
 using Blauhaus.Reactive.Abstractions.Schedulers;

@@ -1,5 +1,6 @@
 ﻿using System;
 using Blauhaus.Geolocation.Abstractions;
+using Blauhaus.Geolocation.Abstractions.Service;
 using Xamarin.Essentials;
 
 namespace Blauhaus.Geolocation.Extensions
