@@ -1,4 +1,5 @@
-﻿using Blauhaus.Common.ValueObjects._Base;
+﻿using System.Text;
+using Blauhaus.Common.ValueObjects._Base;
 
 namespace Blauhaus.Geolocation.Abstractions.ValueObjects
 {
@@ -6,61 +7,100 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
     {
         public Address(
             string countryCode, 
-            string countryName, 
-            string province, 
-            string region, 
-            string town, 
-            string suburb, 
+            string country, 
             string postalCode, 
+            string state, 
+            string county, 
+            string city, 
+            string suburb, 
             string streetName, 
-            string streetNumber)
+            string streetNumber, 
+            string placeName)
         {
             CountryCode = countryCode;
-            CountryName = countryName;
-            Province = province;
-            Region = region;
-            Town = town;
-            Suburb = suburb;
+            Country = country;
             PostalCode = postalCode;
+            State = state;
+            County = county;
+            City = city;
+            Suburb = suburb;
             StreetName = streetName;
             StreetNumber = streetNumber;
+            PlaceName = placeName;
         }
 
         public string CountryCode { get; }
-        public string CountryName { get; }
-        public string Province { get; }
-        public string Region { get; }
-        public string Town { get; }
-        public string Suburb { get; }
+        public string Country { get; }
         public string PostalCode { get; }
+        public string State { get; }
+        public string County { get; }
+        public string City { get; }
+        public string Suburb { get; }
         public string StreetName { get; }
         public string StreetNumber { get; }
+        public string PlaceName { get; }
 
 
         protected override int GetHashCodeCore()
         {
             return CountryCode.GetHashCode() ^
-                   CountryName.GetHashCode() ^
-                   Province.GetHashCode() ^
-                   Region.GetHashCode() ^
-                   Town.GetHashCode() ^
-                   Suburb.GetHashCode() ^
+                   Country.GetHashCode() ^
                    PostalCode.GetHashCode() ^
+                   State.GetHashCode() ^
+                   County.GetHashCode() ^
+                   City.GetHashCode() ^
+                   Suburb.GetHashCode() ^
                    StreetName.GetHashCode() ^
-                   StreetNumber.GetHashCode();
+                   StreetNumber.GetHashCode() ^
+                   PlaceName.GetHashCode();
         }
 
         protected override bool EqualsCore(Address other)
         {
             return CountryCode == other.CountryCode &&
-                   CountryName == other.CountryName &&
-                   Province == other.Province &&
-                   Region == other.Region &&
-                   Town == other.Town &&
+                   Country == other.Country &&
+                   PostalCode == other.PostalCode &&
+                   State == other.State &&
+                   County == other.County &&
+                   City == other.City &&
                    Suburb == other.Suburb &&
-                   PostalCode == other.PostalCode&&
                    StreetName == other.StreetName &&
-                   StreetNumber == other.StreetNumber;
+                   StreetNumber == other.StreetNumber &&
+                   PlaceName == other.PlaceName;
+        }
+
+        public override string ToString()
+        {
+            var s = new StringBuilder();
+
+            if (!string.IsNullOrEmpty(PlaceName) && PlaceName != StreetNumber)
+                s.Append(PlaceName).Append(", ");
+            
+            s.Append($"{StreetNumber} {StreetName}, ");
+
+            if (!string.IsNullOrEmpty(Suburb))
+                s.Append(Suburb).Append(", ");
+            
+            if(!string.IsNullOrEmpty(County))
+                s.Append(County).Append(", ");
+
+            if(!string.IsNullOrEmpty(City))
+                s.Append(City).Append(", ");
+            
+            if(!string.IsNullOrEmpty(State))
+                s.Append(State).Append(", ");
+
+            if(!string.IsNullOrEmpty(PostalCode))
+                s.Append(PostalCode).Append(", ");
+
+            if(!string.IsNullOrEmpty(Country))
+                s.Append(Country).Append(", ");
+
+            if (s[s.Length-2] == ',' && s[s.Length-1] == ' ')
+                s.Length -= 2;
+
+            return s.ToString();
+
         }
     }
 }

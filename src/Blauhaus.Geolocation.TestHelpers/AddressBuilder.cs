@@ -6,26 +6,43 @@ namespace Blauhaus.Geolocation.TestHelpers
     public class AddressBuilder : BaseBuilder<AddressBuilder, Address>
     {
         private string _countryCode;
-        private string _countryName;
-        private string _province;
-        private string _region;
-        private string _town;
-        private string _suburb;
+        private string _country;
         private string _postalCode;
+        private string _state;
+        private string _county;
+        private string _city;
+        private string _suburb;
         private string _streetName;
         private string _streetNumber;
+        private string _placeName;
 
         public AddressBuilder()
         {
+            var randomNumber = Random.Next(0, 100).ToString();
             _countryCode = "ZA";
-            _countryName = "South Africa";
-            _province = "Western Cape";
-            _region = "Region " + Random.Next(0, 1000);
-            _town = "Town " + Random.Next(0, 1000);
-            _suburb = "Suburb " + Random.Next(0, 1000);
-            _postalCode = Random.Next(0, 1000).ToString();
+            _country = "South Africa";
+            _postalCode = randomNumber;
+            _state = "Western Cape";
+            _county = "County " +randomNumber;
+            _city = "City " + randomNumber;
+            _suburb = "Suburb " + randomNumber;
             _streetName = "Street";
-            _streetNumber = $"{Random.Next(0, 100)}";
+            _streetNumber = $"{randomNumber}";
+            _placeName = "Place " + randomNumber;
+        }
+
+        public AddressBuilder With_All_Empty()
+        {
+            _countryCode = string.Empty;
+            _country = string.Empty;
+            _postalCode = string.Empty;
+            _state = string.Empty;
+            _county = string.Empty;
+            _city = string.Empty;
+            _suburb = string.Empty;
+            _streetName = string.Empty;
+            _streetNumber = string.Empty;
+            return this;
         }
 
         public AddressBuilder With_CountryCode(string value)
@@ -33,34 +50,34 @@ namespace Blauhaus.Geolocation.TestHelpers
             _countryCode = value;
             return this;
         }
-        public AddressBuilder With_CountryName(string value)
+        public AddressBuilder With_Country(string value)
         {
-            _countryName = value;
-            return this;
-        }
-        public AddressBuilder With_Province(string value)
-        {
-            _province = value;
-            return this;
-        }
-        public AddressBuilder With_Region(string value)
-        {
-            _region = value;
-            return this;
-        }
-        public AddressBuilder With_Town(string value)
-        {
-            _town = value;
-            return this;
-        }
-        public AddressBuilder With_Suburb(string value)
-        {
-            _suburb = value;
+            _country = value;
             return this;
         }
         public AddressBuilder With_PostalCode(string value)
         {
             _postalCode = value;
+            return this;
+        }
+        public AddressBuilder With_State(string value)
+        {
+            _state = value;
+            return this;
+        }
+        public AddressBuilder With_County(string value)
+        {
+            _county = value;
+            return this;
+        }
+        public AddressBuilder With_City(string value)
+        {
+            _city = value;
+            return this;
+        }
+        public AddressBuilder With_Suburb(string value)
+        {
+            _suburb = value;
             return this;
         }
         public AddressBuilder With_StreetName(string value)
@@ -73,19 +90,25 @@ namespace Blauhaus.Geolocation.TestHelpers
             _streetNumber = value;
             return this;
         }
+        public AddressBuilder With_PlaceName(string value)
+        {
+            _placeName = value;
+            return this;
+        }
 
         protected override Address Construct()
         {
             return new Address(
                 _countryCode,
-                _countryName,
-                _province,
-                _region,
-                _town,
-                _suburb,
+                _country,
                 _postalCode,
+                _state,
+                _county,
+                _city,
+                _suburb,
                 _streetName,
-                _streetNumber);
+                _streetNumber,
+                _placeName);
 
         }
     }

@@ -6,7 +6,7 @@ using CSharpFunctionalExtensions;
 
 namespace Blauhaus.Geolocation.Abstractions.ValueObjects
 {
-    public class GpsLocation : BaseValueObject<GpsLocation>, IGpsLocation
+    public class GpsLocation : BaseValueObject<GpsLocation>
     {
 
         private GpsLocation()

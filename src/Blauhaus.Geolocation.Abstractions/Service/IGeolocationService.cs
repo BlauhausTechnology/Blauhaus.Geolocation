@@ -5,6 +5,6 @@ namespace Blauhaus.Geolocation.Abstractions.Service
 {
     public interface IGeolocationService
     {
-        IObservable<IGpsLocation> Connect(GeolocationRequirements requirements);
+        IObservable<GpsLocation> Connect(GeolocationRequirements requirements);
     }
 }
