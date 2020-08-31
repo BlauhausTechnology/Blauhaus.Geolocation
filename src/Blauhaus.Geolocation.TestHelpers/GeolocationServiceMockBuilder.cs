@@ -86,6 +86,28 @@ namespace Blauhaus.Geolocation.TestHelpers
 
             return x => UpdateEvent?.Invoke(this, new LocationUpdatedEventArgs(x));
         }
+
+        public Action<GpsLocation> Where_Location_returns_and_can_be_updated(GpsLocation location)
+        {
+            Mock.Setup(x => x.Connect(It.IsAny<GeolocationRequirements>()))
+                .Returns(Observable.Create<GpsLocation>(observer =>
+                {
+                    void Update(object sender, LocationUpdatedEventArgs args)
+                    {
+                        observer.OnNext(args.NewLocation);
+                    }
+
+                    var updateSubscription = Observable.FromEventPattern<LocationUpdatedEventArgs>(
+                        x => UpdateEvent += Update,
+                        x => UpdateEvent -= Update).Subscribe();
+
+                    observer.OnNext(location);
+
+                    return new CompositeDisposable(updateSubscription);
+                }));
+
+            return x => UpdateEvent?.Invoke(this, new LocationUpdatedEventArgs(x));
+        }
         
         private event EventHandler<LocationUpdatedEventArgs> UpdateEvent;
         private class LocationUpdatedEventArgs : EventArgs
