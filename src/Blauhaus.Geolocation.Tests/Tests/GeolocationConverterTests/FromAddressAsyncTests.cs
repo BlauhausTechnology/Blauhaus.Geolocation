@@ -61,7 +61,6 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
             //Assert
             MockAnalyticsService.VerifyTrace("GPS cooridnates found from address");
             MockAnalyticsService.VerifyTraceProperty("Address", _addressString);
-            MockAnalyticsService.VerifyTraceProperty(nameof(GpsLocation), _location);
         }
 
         [Test]

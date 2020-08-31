@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.Analytics.TestHelpers;
+using Blauhaus.Analytics.TestHelpers.MockBuilders;
 using Blauhaus.DeviceServices.Abstractions.Permissions;
 using Blauhaus.DeviceServices.Abstractions.Thread;
 using Blauhaus.DeviceServices.TestHelpers.MockBuilders;

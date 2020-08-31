@@ -17,7 +17,7 @@ namespace Blauhaus.Geolocation.TestHelpers
 
         public GeolocationServiceMockBuilder()
         {
-            Where_Connect_returns(new GpsLocation(1, 2));
+            Where_Connect_returns(GpsLocation.Default);
         }
 
         public GeolocationServiceMockBuilder Where_Connect_returns(GpsLocation location)

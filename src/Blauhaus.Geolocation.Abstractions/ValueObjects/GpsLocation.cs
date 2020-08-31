@@ -29,6 +29,8 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
             return new GpsLocation(latitude, longitude);
         }
 
+        public static GpsLocation Default = new GpsLocation(0,0);
+
         public double Longitude { get; private set; }
         public double Latitude { get; private set; }
 
