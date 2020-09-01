@@ -28,7 +28,7 @@ namespace Blauhaus.Geolocation
             _analyticsService = analyticsService;
             _proxy = proxy;
         }
-        public async Task<Result<Address>> ToAddressAsync(GpsLocation gpsLocation)
+        public async Task<Result<Address>> ToAddressAsync(IGpsLocation gpsLocation)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace Blauhaus.Geolocation
             }
         }
 
-        public async Task<Result<GpsLocation>> FromAddressAsync(string address)
+        public async Task<Result<IGpsLocation>> FromAddressAsync(string address)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace Blauhaus.Geolocation
                 if (bestMatch == null)
                 {
                     _analyticsService.TraceWarning(this, "No GPS coordinates found for given address", address.ToObjectDictionary("Address"));
-                    return GeolocationErrors.GpsCoordinatesNotFound.ToResult<GpsLocation>();
+                    return GeolocationErrors.GpsCoordinatesNotFound.ToResult<IGpsLocation>();
                 }
                 
                 var gpsLocation = bestMatch.ToGpsLocation();
@@ -77,7 +77,7 @@ namespace Blauhaus.Geolocation
             }
             catch (Exception e)
             {
-                return _analyticsService.LogExceptionResult<GpsLocation>(this, e, GeolocationErrors.GpsLookupFailed);
+                return _analyticsService.LogExceptionResult<IGpsLocation>(this, e, GeolocationErrors.GpsLookupFailed);
             }
         }
     }

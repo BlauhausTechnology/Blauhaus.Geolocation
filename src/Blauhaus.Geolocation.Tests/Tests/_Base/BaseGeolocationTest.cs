@@ -23,7 +23,7 @@ namespace Blauhaus.Geolocation.Tests.Tests._Base
     public class BaseGeolocationTest<TSut> : BaseServiceTest<TSut> where TSut : class
     {
 
-        protected TaskCompletionSource<List<GpsLocation>> LocationTaskCompletionSource;
+        protected TaskCompletionSource<List<IGpsLocation>> LocationTaskCompletionSource;
         protected TaskCompletionSource<Exception> ExceptionTaskCompletionSource;
 
         [SetUp]
@@ -31,7 +31,7 @@ namespace Blauhaus.Geolocation.Tests.Tests._Base
         {
             Cleanup();
 
-            LocationTaskCompletionSource = new TaskCompletionSource<List<GpsLocation>>();
+            LocationTaskCompletionSource = new TaskCompletionSource<List<IGpsLocation>>();
             ExceptionTaskCompletionSource = new TaskCompletionSource<Exception>();
 
             AddService(MockProxy.Object);

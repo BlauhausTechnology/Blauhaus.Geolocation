@@ -36,7 +36,7 @@ namespace Blauhaus.Geolocation
             _proxy = proxy;
         }
 
-        public IObservable<GpsLocation> Connect(GeolocationRequirements requirements)
+        public IObservable<IGpsLocation> Connect(GeolocationRequirements requirements)
         {
 
             var interval = requirements.UpdateInterval;
@@ -44,7 +44,7 @@ namespace Blauhaus.Geolocation
 
             _analyticsService.TraceVerbose(this, $"New GpsLocation connection requested with accuracy {requiredAccuracy} and interval {interval}");
 
-            return Observable.Create<GpsLocation>(async observer =>
+            return Observable.Create<IGpsLocation>(async observer =>
             {
 
                 var permissions = await _devicePermissionsService.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse);
@@ -73,7 +73,7 @@ namespace Blauhaus.Geolocation
             });
         }
 
-        private async Task PublishLastKnownLocationAsync(IObserver<GpsLocation> observer)
+        private async Task PublishLastKnownLocationAsync(IObserver<IGpsLocation> observer)
         {
             try
             {
@@ -105,7 +105,7 @@ namespace Blauhaus.Geolocation
             }
         }
 
-        private async Task PublishCurrentLocationAsync(GeolocationRequest geolocationRequest, IObserver<GpsLocation> observer, string description)
+        private async Task PublishCurrentLocationAsync(GeolocationRequest geolocationRequest, IObserver<IGpsLocation> observer, string description)
         {
             try
             {

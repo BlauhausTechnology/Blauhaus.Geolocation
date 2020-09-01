@@ -6,7 +6,7 @@ using CSharpFunctionalExtensions;
 
 namespace Blauhaus.Geolocation.Abstractions.ValueObjects
 {
-    public class GpsLocation : BaseValueObject<GpsLocation>
+    public class GpsLocation : BaseValueObject<IGpsLocation>, IGpsLocation
     {
 
         private GpsLocation()
@@ -18,13 +18,13 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
             Longitude = longitude;
         }
 
-        public static Result<GpsLocation> Create(double latitude, double longitude)
+        public static Result<IGpsLocation> Create(double latitude, double longitude)
         {
             if (latitude > 90 || latitude < -90)
-                return GeolocationErrors.InvalidLatitude.ToResult<GpsLocation>(); 
+                return GeolocationErrors.InvalidLatitude.ToResult<IGpsLocation>(); 
 
             if (longitude > 180 || longitude < -180)
-                return GeolocationErrors.InvalidLongitude.ToResult<GpsLocation>();
+                return GeolocationErrors.InvalidLongitude.ToResult<IGpsLocation>();
 
             return new GpsLocation(latitude, longitude);
         }
@@ -34,7 +34,7 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
         public double Longitude { get; private set; }
         public double Latitude { get; private set; }
 
-        public double GetMetresFrom(GpsLocation otherLocation)
+        public double GetMetresFrom(IGpsLocation otherLocation)
         {
             var d1 = Latitude * (Math.PI / 180.0);
             var num1 = Longitude * (Math.PI / 180.0);
@@ -51,21 +51,14 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
             return (Longitude.GetHashCode() * 397) ^ Latitude.GetHashCode();
         }
 
-        protected override bool EqualsCore(GpsLocation other)
+        protected override bool EqualsCore(IGpsLocation otherLocation)
         {
-            return other.Latitude == Latitude && other.Longitude == Longitude;
+            const double epsilon = 0.000001; //Accuracy to roughly 10cm
+            
+            return Math.Abs(otherLocation.Latitude - Latitude) < epsilon &&
+                   (Math.Abs(otherLocation.Longitude - Longitude) < epsilon);
         }
-
-        public static bool operator ==(GpsLocation left, GpsLocation right)
-        {
-            return Equals(left, right);
-        }
-
-        public static bool operator !=(GpsLocation left, GpsLocation right)
-        {
-            return !Equals(left, right);
-        }
-
+         
 
         public override string ToString()
         {

@@ -16,7 +16,7 @@ namespace Blauhaus.Geolocation.TestHelpers
             Where_ToAddressAsync_returns(Address.Empty);
         }
 
-        public GeolocationConverterMockBuilder Where_FromAddressAsync_returns(GpsLocation location, string address = null)
+        public GeolocationConverterMockBuilder Where_FromAddressAsync_returns(IGpsLocation location, string address = null)
         {
             if (address == null)
             {
@@ -33,7 +33,7 @@ namespace Blauhaus.Geolocation.TestHelpers
         public GeolocationConverterMockBuilder Where_FromAddressAsync_fails(Error error)
         {
             Mock.Setup(x => x.FromAddressAsync(It.IsAny<string>()))
-                .ReturnsAsync(Result.Failure<GpsLocation>(error.ToString()));
+                .ReturnsAsync(Result.Failure<IGpsLocation>(error.ToString()));
             return this;
         }
 

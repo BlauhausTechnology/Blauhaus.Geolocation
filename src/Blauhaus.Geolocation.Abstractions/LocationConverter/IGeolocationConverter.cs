@@ -7,7 +7,7 @@ namespace Blauhaus.Geolocation.Abstractions.LocationConverter
 {
     public interface IGeolocationConverter
     {
-        Task<Result<Address>> ToAddressAsync(GpsLocation gpsLocation);
-        Task<Result<GpsLocation>> FromAddressAsync(string address);
+        Task<Result<Address>> ToAddressAsync(IGpsLocation gpsLocation);
+        Task<Result<IGpsLocation>> FromAddressAsync(string address);
     }
 }
