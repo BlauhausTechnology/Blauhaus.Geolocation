@@ -36,6 +36,23 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
             return new GpsLocation(latitude, longitude);
         }
 
+        public static Result<IGpsLocation> Parse(string serializedGpsLocation)
+        {
+            if (string.IsNullOrEmpty(serializedGpsLocation))
+                return GeolocationErrors.InvalidSerialization.ToResult<IGpsLocation>();
+
+            var coordinateStrings = serializedGpsLocation.Split(',');
+
+            if(coordinateStrings.Length != 2)
+                return GeolocationErrors.InvalidSerialization.ToResult<IGpsLocation>();
+
+            if(!double.TryParse(coordinateStrings[0], out var latitude) || !double.TryParse(coordinateStrings[1], out var longitude))
+                return GeolocationErrors.InvalidSerialization.ToResult<IGpsLocation>();
+
+            return Create(latitude, longitude);
+
+        }
+
         public static GpsLocation Default = new GpsLocation(0,0);
 
         public double Longitude { get; private set; }
