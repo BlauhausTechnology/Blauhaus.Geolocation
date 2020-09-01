@@ -1,5 +1,6 @@
 ﻿using System;
 using Blauhaus.Common.ValueObjects._Base;
+using Blauhaus.Errors;
 using Blauhaus.Errors.Extensions;
 using Blauhaus.Geolocation.Abstractions.Errors;
 using CSharpFunctionalExtensions;
@@ -14,6 +15,12 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
 
         public GpsLocation(double latitude, double longitude)
         {
+            if (latitude > 90 || latitude < -90)
+                throw new ErrorException(GeolocationErrors.InvalidLatitude); 
+
+            if (longitude > 180 || longitude < -180)
+                throw new ErrorException(GeolocationErrors.InvalidLongitude); 
+
             Latitude = latitude;
             Longitude = longitude;
         }
@@ -45,7 +52,6 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
             return 6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
         }
 
-         
         protected override int GetHashCodeCore()
         {
             return (Longitude.GetHashCode() * 397) ^ Latitude.GetHashCode();
