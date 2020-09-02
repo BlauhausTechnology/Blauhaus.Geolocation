@@ -31,6 +31,13 @@ namespace Blauhaus.Geolocation.TestHelpers
             return this;
         }
 
+        public GeolocationServiceMockBuilder Where_Connect_returns(IDisposable subscriptionToken)
+        {
+            Mock.Setup(x => x.Connect(It.IsAny<GeolocationRequirements>()))
+                .Returns(Observable.Create<IGpsLocation>(observer => subscriptionToken));
+            return this;
+        }
+
         public GeolocationServiceMockBuilder Where_Connect_returns_sequence(IEnumerable<IGpsLocation> locations)
         {
             var queue = new Queue<IGpsLocation>(locations);
