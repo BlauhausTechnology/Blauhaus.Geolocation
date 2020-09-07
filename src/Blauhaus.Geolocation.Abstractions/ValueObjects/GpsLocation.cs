@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Blauhaus.Common.ValueObjects._Base;
 using Blauhaus.Errors;
 using Blauhaus.Errors.Extensions;
@@ -39,18 +40,23 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
         public static Result<IGpsLocation> Parse(string serializedGpsLocation)
         {
             if (string.IsNullOrEmpty(serializedGpsLocation))
-                return GeolocationErrors.InvalidSerialization.ToResult<IGpsLocation>();
+                return GeolocationErrors.InvalidSerialization().ToResult<IGpsLocation>();
 
             var coordinateStrings = serializedGpsLocation.Split(',');
 
             if(coordinateStrings.Length != 2)
-                return GeolocationErrors.InvalidSerialization.ToResult<IGpsLocation>();
+                return GeolocationErrors.InvalidSerialization().ToResult<IGpsLocation>();
 
-            if(!double.TryParse(coordinateStrings[0], out var latitude) || !double.TryParse(coordinateStrings[1], out var longitude))
-                return GeolocationErrors.InvalidSerialization.ToResult<IGpsLocation>();
-
-            return Create(latitude, longitude);
-
+            try
+            {
+                var latitude = double.Parse(coordinateStrings[0], CultureInfo.InvariantCulture);
+                var longitude = double.Parse(coordinateStrings[1], CultureInfo.InvariantCulture);
+                return Create(latitude, longitude);
+            }
+            catch (Exception e)
+            {
+                return GeolocationErrors.InvalidSerialization(e.Message).ToResult<IGpsLocation>();
+            }
         }
 
         public static GpsLocation Default = new GpsLocation(0,0);
@@ -85,7 +91,7 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
 
         public override string ToString()
         {
-            return $"Lat: {Latitude} | Long: {Longitude}";
+            return $"{Latitude.ToString(CultureInfo.InvariantCulture)}, {Longitude.ToString(CultureInfo.InvariantCulture)}";
         }
          
 
