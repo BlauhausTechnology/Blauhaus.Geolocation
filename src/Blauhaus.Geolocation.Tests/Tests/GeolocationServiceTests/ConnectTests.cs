@@ -50,7 +50,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             {
                 //Arrange 
                 MockDevicePermissionsService.Mock.Setup(x => x.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse))
-                    .ReturnsAsync(Result.Failure(DevicePermissionErrors.Unknown("perm").ToString()));
+                    .ReturnsAsync(Result.Failure(DevicePermissionErrors.PermissionUnknown("perm").ToString()));
                 var tcs = new TaskCompletionSource<Exception>();
 
                 //Act
@@ -60,7 +60,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 //Assert
                 var errorException = exception as ErrorException;
                 Assert.That(errorException, Is.Not.Null);
-                Assert.That(errorException.Error, Is.EqualTo(DevicePermissionErrors.Unknown("perm")));
+                Assert.That(errorException.Error, Is.EqualTo(DevicePermissionErrors.PermissionUnknown("perm")));
                 MockAnalyticsService.VerifyTrace("Failed to access GpsLocation due to permissions failure", LogSeverity.Warning);
 
             }

@@ -30,6 +30,10 @@ namespace Blauhaus.Geolocation
         }
         public async Task<Result<Address>> ToAddressAsync(IGpsLocation gpsLocation)
         {
+            if (gpsLocation == null)
+            {
+                return _analyticsService.TraceErrorResult<Address>(this, GeolocationErrors.EmptyLocation);
+            }
             try
             {
                 var placemarks = await _proxy.GetPlacemarksFromLocationAsync(new Location(gpsLocation.Latitude, gpsLocation.Longitude));
@@ -50,12 +54,16 @@ namespace Blauhaus.Geolocation
             }
             catch (Exception e)
             {
-                return _analyticsService.LogExceptionResult<Address>(this, e, GeolocationErrors.AddressLookupFailed);
+                return _analyticsService.LogExceptionResult<Address>(this, e, GeolocationErrors.AddressLookupFailed, gpsLocation.ToObjectDictionary("GpsLocation"));
             }
         }
 
         public async Task<Result<IGpsLocation>> FromAddressAsync(string address)
         {
+            if (string.IsNullOrEmpty(address))
+            {
+                return _analyticsService.TraceErrorResult<IGpsLocation>(this, GeolocationErrors.EmptyAddress);
+            }
             try
             {
                 var matchingLocations = await _proxy.GetLocationsFromAddressAsync(address);
@@ -77,7 +85,7 @@ namespace Blauhaus.Geolocation
             }
             catch (Exception e)
             {
-                return _analyticsService.LogExceptionResult<IGpsLocation>(this, e, GeolocationErrors.GpsLookupFailed);
+                return _analyticsService.LogExceptionResult<IGpsLocation>(this, e, GeolocationErrors.GpsLookupFailed, address.ToObjectDictionary("AddressString"));
             }
         }
     }

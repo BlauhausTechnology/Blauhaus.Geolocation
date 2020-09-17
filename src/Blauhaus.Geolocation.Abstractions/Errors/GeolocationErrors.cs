@@ -8,6 +8,9 @@ namespace Blauhaus.Geolocation.Abstractions.Errors
        
         public static readonly Error InvalidLatitude = Error.Create("The value provided for Latitude is invalid. Latitude must be between -90 and +90 degrees");
         public static readonly Error InvalidLongitude = Error.Create("The value provided for Longitude is invalid. Latitude must be between -180 and +180 degrees");
+        public static readonly Error EmptyAddress = Error.Create("The given address was empty");
+        public static readonly Error EmptyLocation = Error.Create("No location was provided for the address lookup");
+
         public static Error InvalidSerialization() => Error.Create("The text provided is not a valid GPS location");
         public static Error InvalidSerialization(string exceptionMessage) => Error.Create("The text provided is not a valid GPS location. Exception message: " + exceptionMessage);
         

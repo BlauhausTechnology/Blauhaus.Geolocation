@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blauhaus.Analytics.Abstractions.Service;
+using Blauhaus.Analytics.TestHelpers.Extensions;
 using Blauhaus.Errors.Extensions;
 using Blauhaus.Geolocation.Abstractions.Errors;
-using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.Geolocation.Tests.Tests._Base;
-using Moq;
 using NUnit.Framework;
 using Xamarin.Essentials;
 
@@ -39,6 +38,16 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
 
             //Assert
             MockProxy.Mock.Verify(x => x.GetLocationsFromAddressAsync(_addressString));
+        }
+
+        [Test]
+        public async Task IF_address_string_is_empty_SHOULD_fail()
+        {
+            //Act
+            var result = await Sut.FromAddressAsync("");
+
+            //Assert
+            result.VerifyResultError(GeolocationErrors.EmptyAddress, MockAnalyticsService); 
         }
 
         [Test]
