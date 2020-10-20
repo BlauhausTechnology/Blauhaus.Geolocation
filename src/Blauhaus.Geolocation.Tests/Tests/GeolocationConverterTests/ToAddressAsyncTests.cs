@@ -6,6 +6,7 @@ using Blauhaus.Errors.Extensions;
 using Blauhaus.Geolocation.Abstractions.Errors;
 using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.Geolocation.Tests.Tests._Base;
+using Blauhaus.Responses.Extensions;
 using Moq;
 using NUnit.Framework;
 using Xamarin.Essentials;

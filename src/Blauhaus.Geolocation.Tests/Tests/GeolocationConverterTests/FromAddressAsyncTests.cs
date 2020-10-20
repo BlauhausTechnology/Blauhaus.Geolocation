@@ -6,6 +6,7 @@ using Blauhaus.Analytics.TestHelpers.Extensions;
 using Blauhaus.Errors.Extensions;
 using Blauhaus.Geolocation.Abstractions.Errors;
 using Blauhaus.Geolocation.Tests.Tests._Base;
+using Blauhaus.Responses.Extensions;
 using NUnit.Framework;
 using Xamarin.Essentials;
 
@@ -47,7 +48,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
             var result = await Sut.FromAddressAsync("");
 
             //Assert
-            result.VerifyResultError(GeolocationErrors.EmptyAddress, MockAnalyticsService); 
+            result.VerifyResponseError(GeolocationErrors.EmptyAddress, MockAnalyticsService); 
         }
 
         [Test]

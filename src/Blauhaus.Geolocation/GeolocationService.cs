@@ -51,7 +51,7 @@ namespace Blauhaus.Geolocation
                 if (permissions.IsFailure)
                 {
                     _analyticsService.TraceWarning(this, "Failed to access GpsLocation due to permissions failure");
-                    observer.OnError(new ErrorException(permissions));
+                    observer.OnError(new ErrorException(permissions.Error));
                 }
 
                 var geolocationRequest = requiredAccuracy.ToGeoLocationRequest();
@@ -87,8 +87,8 @@ namespace Blauhaus.Geolocation
                     var lastLocation = GpsLocation.Create(lastKnownLocation.Latitude, lastKnownLocation.Longitude);
                     if (lastLocation.IsFailure)
                     {
-                        _analyticsService.TraceError(this, lastLocation.Error.ToError().ToString(), lastKnownLocation.ToObjectDictionary());
-                        observer.OnError(new ErrorException(lastLocation));
+                        _analyticsService.TraceError(this, lastLocation.Error, lastKnownLocation.ToObjectDictionary());
+                        observer.OnError(new ErrorException(lastLocation.Error));
                     }
                     else
                     {
@@ -119,8 +119,8 @@ namespace Blauhaus.Geolocation
                     var currentGpsLocation = GpsLocation.Create(currentLocation.Latitude, currentLocation.Longitude);
                     if (currentGpsLocation.IsFailure)
                     {
-                        _analyticsService.TraceError(this, currentGpsLocation.Error.ToError().ToString(), currentLocation.ToObjectDictionary());
-                        observer.OnError(new ErrorException(currentGpsLocation));
+                        _analyticsService.TraceError(this, currentGpsLocation.Error, currentLocation.ToObjectDictionary());
+                        observer.OnError(new ErrorException(currentGpsLocation.Error));
                     }
                     else
                     {

@@ -10,6 +10,7 @@ using Blauhaus.Geolocation.Abstractions.Errors;
 using Blauhaus.Geolocation.Abstractions.Service;
 using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.Geolocation.Tests.Tests._Base;
+using Blauhaus.Responses;
 using CSharpFunctionalExtensions;
 using Microsoft.Reactive.Testing;
 using Moq;
@@ -30,7 +31,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             _testScheduler = MockReactiveSchedulers.With_Test_ThreadPoolScheduler();
             _requirements = new GeolocationRequirements(TimeSpan.FromTicks(1000), LocationAccuracy.High);
             MockDevicePermissionsService.Mock.Setup(x => x.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse))
-                .ReturnsAsync(Result.Success);
+                .ReturnsAsync(Response.Success);
         }
 
         public class Permissions : ConnectTests
@@ -50,7 +51,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             {
                 //Arrange 
                 MockDevicePermissionsService.Mock.Setup(x => x.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse))
-                    .ReturnsAsync(Result.Failure(DevicePermissionErrors.PermissionUnknown("perm").ToString()));
+                    .ReturnsAsync(Response.Failure(DevicePermissionErrors.PermissionUnknown("perm")));
                 var tcs = new TaskCompletionSource<Exception>();
 
                 //Act
