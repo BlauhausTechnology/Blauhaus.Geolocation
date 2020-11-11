@@ -1,11 +1,6 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Threading;
-using Blauhaus.Errors.Extensions;
-using Blauhaus.Geolocation.Abstractions;
-using Blauhaus.Geolocation.Abstractions.Errors;
 using Blauhaus.Geolocation.Abstractions.ValueObjects;
-using Blauhaus.Geolocation.Tests.Tests._Base;
 using NUnit.Framework;
 
 namespace Blauhaus.Geolocation.Tests.Tests.GpsLocationTests

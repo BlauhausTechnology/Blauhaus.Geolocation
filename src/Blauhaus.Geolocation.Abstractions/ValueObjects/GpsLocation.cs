@@ -2,11 +2,9 @@
 using System.Globalization;
 using Blauhaus.Common.ValueObjects._Base;
 using Blauhaus.Errors;
-using Blauhaus.Errors.Extensions;
 using Blauhaus.Geolocation.Abstractions.Errors;
 using Blauhaus.Responses;
 using Blauhaus.Responses.Extensions;
-using CSharpFunctionalExtensions;
 
 namespace Blauhaus.Geolocation.Abstractions.ValueObjects
 {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Blauhaus.Errors;
-using Blauhaus.Geolocation.Abstractions;
 using Blauhaus.Geolocation.Abstractions.Service;
 using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.TestHelpers.MockBuilders;

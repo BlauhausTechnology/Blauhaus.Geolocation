@@ -3,7 +3,6 @@ using Blauhaus.Geolocation.Abstractions.LocationConverter;
 using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.Responses;
 using Blauhaus.TestHelpers.MockBuilders;
-using CSharpFunctionalExtensions;
 using Moq;
 
 namespace Blauhaus.Geolocation.TestHelpers
