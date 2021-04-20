@@ -123,7 +123,7 @@ namespace Blauhaus.Geolocation
                     }
                     else
                     {
-                        _analyticsService.Trace(this, $"{description} location published");
+                        _analyticsService.Debug($"{description} location published");
                         observer.OnNext(currentGpsLocation.Value);
                     }
                 }

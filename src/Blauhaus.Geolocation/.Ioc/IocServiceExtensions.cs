@@ -4,7 +4,7 @@ using Blauhaus.Ioc.Abstractions;
 using Blauhaus.Reactive.Abstractions.Schedulers;
 using Blauhaus.Reactive.Schedulers;
 
-namespace Blauhaus.Geolocation._Ioc
+namespace Blauhaus.Geolocation.Ioc
 {
     public static class IocServiceExtensions
     {

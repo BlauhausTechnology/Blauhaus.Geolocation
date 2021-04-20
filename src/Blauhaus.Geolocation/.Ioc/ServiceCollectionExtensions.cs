@@ -3,7 +3,7 @@ using Blauhaus.Geolocation.Proxy;
 using Blauhaus.Reactive._Ioc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Blauhaus.Geolocation._Ioc
+namespace Blauhaus.Geolocation.Ioc
 {
     public static class ServiceCollectionExtensions 
     {

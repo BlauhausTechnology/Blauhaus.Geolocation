@@ -170,7 +170,8 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 //Assert
                 Assert.That(locations[0].Latitude, Is.EqualTo(12));
                 Assert.That(locations[0].Longitude, Is.EqualTo(22));
-                MockAnalyticsService.VerifyTrace("Current location published");
+                MockAnalyticsService.Mock.Verify(x => x.Debug("Current location published",  
+                    It.IsAny<Dictionary<string, object>>()), Times.Exactly(1));
             }
             
             [Test]
@@ -285,8 +286,8 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var third = await result3.Task;
                 Assert.That(third.Latitude, Is.EqualTo(2));
                  
-                MockAnalyticsService.Mock.Verify(x => x.Trace(Sut, "Updated location published", LogSeverity.Verbose, 
-                    It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()), Times.Exactly(3));
+                MockAnalyticsService.Mock.Verify(x => x.Debug("Updated location published",  
+                    It.IsAny<Dictionary<string, object>>()), Times.Exactly(3));
                 disposable.Dispose();
             }
             
