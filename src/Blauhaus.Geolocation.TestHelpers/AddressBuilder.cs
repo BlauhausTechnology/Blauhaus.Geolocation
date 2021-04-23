@@ -1,5 +1,5 @@
 ﻿using Blauhaus.Geolocation.Abstractions.ValueObjects;
-using Blauhaus.TestHelpers.Builders._Base;
+using Blauhaus.TestHelpers.Builders.Base;
 
 namespace Blauhaus.Geolocation.TestHelpers
 {
