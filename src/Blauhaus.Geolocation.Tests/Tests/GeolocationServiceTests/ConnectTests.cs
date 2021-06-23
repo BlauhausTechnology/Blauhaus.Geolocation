@@ -5,12 +5,11 @@ using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.DeviceServices.Abstractions.Permissions;
 using Blauhaus.Errors;
 using Blauhaus.Errors.Extensions;
-using Blauhaus.Geolocation.Abstractions;
 using Blauhaus.Geolocation.Abstractions.Errors;
 using Blauhaus.Geolocation.Abstractions.Service;
 using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.Geolocation.Tests.Tests._Base;
-using CSharpFunctionalExtensions;
+using Blauhaus.Responses;
 using Microsoft.Reactive.Testing;
 using Moq;
 using NUnit.Framework;
@@ -30,7 +29,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             _testScheduler = MockReactiveSchedulers.With_Test_ThreadPoolScheduler();
             _requirements = new GeolocationRequirements(TimeSpan.FromTicks(1000), LocationAccuracy.High);
             MockDevicePermissionsService.Mock.Setup(x => x.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse))
-                .ReturnsAsync(Result.Success);
+                .ReturnsAsync(Response.Success);
         }
 
         public class Permissions : ConnectTests
@@ -50,7 +49,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             {
                 //Arrange 
                 MockDevicePermissionsService.Mock.Setup(x => x.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse))
-                    .ReturnsAsync(Result.Failure(DevicePermissionErrors.Unknown("perm").ToString()));
+                    .ReturnsAsync(Response.Failure(DevicePermissionErrors.PermissionUnknown("perm")));
                 var tcs = new TaskCompletionSource<Exception>();
 
                 //Act
@@ -60,7 +59,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 //Assert
                 var errorException = exception as ErrorException;
                 Assert.That(errorException, Is.Not.Null);
-                Assert.That(errorException.Error, Is.EqualTo(DevicePermissionErrors.Unknown("perm")));
+                Assert.That(errorException.Error, Is.EqualTo(DevicePermissionErrors.PermissionUnknown("perm")));
                 MockAnalyticsService.VerifyTrace("Failed to access GpsLocation due to permissions failure", LogSeverity.Warning);
 
             }
@@ -94,7 +93,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             { 
                 //Act
                 Sut.Connect(_requirements)
-                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<GpsLocation> {next}); });
+                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<IGpsLocation> {next}); });
                 var locations = await LocationTaskCompletionSource.Task;
 
                 //Assert
@@ -164,14 +163,15 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             { 
                 //Act
                 Sut.Connect(_requirements)
-                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<GpsLocation> {next}); });
+                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<IGpsLocation> {next}); });
                 
                 var locations = await LocationTaskCompletionSource.Task;
 
                 //Assert
                 Assert.That(locations[0].Latitude, Is.EqualTo(12));
                 Assert.That(locations[0].Longitude, Is.EqualTo(22));
-                MockAnalyticsService.VerifyTrace("Current location published");
+                MockAnalyticsService.Mock.Verify(x => x.Debug("Current location published",  
+                    It.IsAny<Dictionary<string, object>>()), Times.Exactly(1));
             }
             
             [Test]
@@ -228,7 +228,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
 
                 //Act
                 Sut.Connect(new GeolocationRequirements(TimeSpan.FromTicks(1), given))
-                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<GpsLocation> {next}); });
+                    .Subscribe(next => { LocationTaskCompletionSource.SetResult(new List<IGpsLocation> {next}); });
                 await LocationTaskCompletionSource.Task;
 
                 //Assert
@@ -258,9 +258,9 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                     new Location(2,4),
                     new Location(3,6),
                 }); 
-                var result1 = new TaskCompletionSource<GpsLocation>();
-                var result2 = new TaskCompletionSource<GpsLocation>();
-                var result3 = new TaskCompletionSource<GpsLocation>();
+                var result1 = new TaskCompletionSource<IGpsLocation>();
+                var result2 = new TaskCompletionSource<IGpsLocation>();
+                var result3 = new TaskCompletionSource<IGpsLocation>();
                 var count = 0;
 
                 //Act
@@ -286,8 +286,8 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var third = await result3.Task;
                 Assert.That(third.Latitude, Is.EqualTo(2));
                  
-                MockAnalyticsService.Mock.Verify(x => x.Trace(Sut, "Updated location published", LogSeverity.Verbose, 
-                    It.IsAny<Dictionary<string, object>>(), It.IsAny<string>()), Times.Exactly(3));
+                MockAnalyticsService.Mock.Verify(x => x.Debug("Updated location published",  
+                    It.IsAny<Dictionary<string, object>>()), Times.Exactly(3));
                 disposable.Dispose();
             }
             
@@ -295,7 +295,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             public async Task IF_location_throws_exception_SHOULD_error()
             {
                 //Arrange
-                var result1 = new TaskCompletionSource<GpsLocation>();
+                var result1 = new TaskCompletionSource<IGpsLocation>();
                 var result2 = new TaskCompletionSource<Exception>(); 
 
                 //Act
@@ -328,7 +328,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             public async Task IF_location_returned_is_invalid_SHOULD_error()
             {
                 //Arrange 
-                var result1 = new TaskCompletionSource<GpsLocation>();
+                var result1 = new TaskCompletionSource<IGpsLocation>();
                 var result2 = new TaskCompletionSource<Exception>(); 
 
                 //Act

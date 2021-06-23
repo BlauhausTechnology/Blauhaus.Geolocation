@@ -1,13 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Blauhaus.Geolocation.Abstractions.ValueObjects;
-using CSharpFunctionalExtensions;
+using Blauhaus.Responses;
 
 namespace Blauhaus.Geolocation.Abstractions.LocationConverter
 {
     public interface IGeolocationConverter
     {
-        Task<Result<Address>> ToAddressAsync(GpsLocation gpsLocation);
-        Task<Result<GpsLocation>> FromAddressAsync(string address);
+        Task<Response<Address>> ToAddressAsync(IGpsLocation gpsLocation);
+        Task<Response<IGpsLocation>> FromAddressAsync(string address);
     }
 }

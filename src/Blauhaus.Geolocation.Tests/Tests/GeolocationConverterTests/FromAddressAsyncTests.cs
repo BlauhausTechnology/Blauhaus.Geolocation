@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Blauhaus.Analytics.Abstractions.Service;
-using Blauhaus.Errors.Extensions;
+using Blauhaus.Analytics.TestHelpers.Extensions;
 using Blauhaus.Geolocation.Abstractions.Errors;
-using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.Geolocation.Tests.Tests._Base;
-using Moq;
+using Blauhaus.Responses.Extensions;
 using NUnit.Framework;
 using Xamarin.Essentials;
 
@@ -42,6 +41,16 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
         }
 
         [Test]
+        public async Task IF_address_string_is_empty_SHOULD_fail()
+        {
+            //Act
+            var result = await Sut.FromAddressAsync("");
+
+            //Assert
+            result.VerifyResponseError(GeolocationErrors.EmptyAddress, MockAnalyticsService); 
+        }
+
+        [Test]
         public async Task SHOULD_return_first_location()
         {
             //Act
@@ -61,7 +70,6 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
             //Assert
             MockAnalyticsService.VerifyTrace("GPS cooridnates found from address");
             MockAnalyticsService.VerifyTraceProperty("Address", _addressString);
-            MockAnalyticsService.VerifyTraceProperty(nameof(GpsLocation), _location);
         }
 
         [Test]

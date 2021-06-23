@@ -1,6 +1,4 @@
-﻿using Blauhaus.Geolocation.Abstractions;
-using Blauhaus.Geolocation.Abstractions.ValueObjects;
-using Blauhaus.Geolocation.Tests.Tests._Base;
+﻿using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using NUnit.Framework;
 
 namespace Blauhaus.Geolocation.Tests.Tests.GpsLocationTests
@@ -20,6 +18,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GpsLocationTests
             Assert.That(one != two, Is.False); 
             Assert.That(one.GetHashCode(), Is.EqualTo(two.GetHashCode())); 
         }
+         
 
         [Test]
         public void Equality_SHOULD_return_false_when_lat_or_long_are_different()

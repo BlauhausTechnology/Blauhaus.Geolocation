@@ -6,7 +6,6 @@ using Blauhaus.Analytics.Abstractions.Extensions;
 using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.DeviceServices.Abstractions.Permissions;
 using Blauhaus.Errors;
-using Blauhaus.Errors.Extensions;
 using Blauhaus.Geolocation.Abstractions.Errors;
 using Blauhaus.Geolocation.Abstractions.Service;
 using Blauhaus.Geolocation.Abstractions.ValueObjects;
@@ -36,7 +35,7 @@ namespace Blauhaus.Geolocation
             _proxy = proxy;
         }
 
-        public IObservable<GpsLocation> Connect(GeolocationRequirements requirements)
+        public IObservable<IGpsLocation> Connect(GeolocationRequirements requirements)
         {
 
             var interval = requirements.UpdateInterval;
@@ -44,14 +43,14 @@ namespace Blauhaus.Geolocation
 
             _analyticsService.TraceVerbose(this, $"New GpsLocation connection requested with accuracy {requiredAccuracy} and interval {interval}");
 
-            return Observable.Create<GpsLocation>(async observer =>
+            return Observable.Create<IGpsLocation>(async observer =>
             {
 
                 var permissions = await _devicePermissionsService.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse);
                 if (permissions.IsFailure)
                 {
                     _analyticsService.TraceWarning(this, "Failed to access GpsLocation due to permissions failure");
-                    observer.OnError(new ErrorException(permissions));
+                    observer.OnError(new ErrorException(permissions.Error));
                 }
 
                 var geolocationRequest = requiredAccuracy.ToGeoLocationRequest();
@@ -73,7 +72,7 @@ namespace Blauhaus.Geolocation
             });
         }
 
-        private async Task PublishLastKnownLocationAsync(IObserver<GpsLocation> observer)
+        private async Task PublishLastKnownLocationAsync(IObserver<IGpsLocation> observer)
         {
             try
             {
@@ -87,8 +86,8 @@ namespace Blauhaus.Geolocation
                     var lastLocation = GpsLocation.Create(lastKnownLocation.Latitude, lastKnownLocation.Longitude);
                     if (lastLocation.IsFailure)
                     {
-                        _analyticsService.TraceError(this, lastLocation.Error.ToError().ToString(), lastKnownLocation.ToObjectDictionary());
-                        observer.OnError(new ErrorException(lastLocation));
+                        _analyticsService.TraceError(this, lastLocation.Error, lastKnownLocation.ToObjectDictionary());
+                        observer.OnError(new ErrorException(lastLocation.Error));
                     }
                     else
                     {
@@ -105,7 +104,7 @@ namespace Blauhaus.Geolocation
             }
         }
 
-        private async Task PublishCurrentLocationAsync(GeolocationRequest geolocationRequest, IObserver<GpsLocation> observer, string description)
+        private async Task PublishCurrentLocationAsync(GeolocationRequest geolocationRequest, IObserver<IGpsLocation> observer, string description)
         {
             try
             {
@@ -119,12 +118,12 @@ namespace Blauhaus.Geolocation
                     var currentGpsLocation = GpsLocation.Create(currentLocation.Latitude, currentLocation.Longitude);
                     if (currentGpsLocation.IsFailure)
                     {
-                        _analyticsService.TraceError(this, currentGpsLocation.Error.ToError().ToString(), currentLocation.ToObjectDictionary());
-                        observer.OnError(new ErrorException(currentGpsLocation));
+                        _analyticsService.TraceError(this, currentGpsLocation.Error, currentLocation.ToObjectDictionary());
+                        observer.OnError(new ErrorException(currentGpsLocation.Error));
                     }
                     else
                     {
-                        _analyticsService.Trace(this, $"{description} location published");
+                        _analyticsService.Debug($"{description} location published");
                         observer.OnNext(currentGpsLocation.Value);
                     }
                 }
