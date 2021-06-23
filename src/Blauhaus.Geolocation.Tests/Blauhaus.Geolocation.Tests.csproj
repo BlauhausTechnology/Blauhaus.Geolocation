@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Tests\.Base\BaseGeolocationTest.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Blauhaus.Analytics.TestHelpers" Version="1.6.13" />
     <PackageReference Include="Blauhaus.DeviceServices.TestHelpers" Version="1.0.3" />
     <PackageReference Include="nunit" Version="3.13.2" />

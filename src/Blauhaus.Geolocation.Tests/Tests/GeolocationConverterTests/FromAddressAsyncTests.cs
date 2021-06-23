@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.Analytics.TestHelpers.Extensions;
 using Blauhaus.Geolocation.Abstractions.Errors;
-using Blauhaus.Geolocation.Tests.Tests._Base;
+using Blauhaus.Geolocation.Tests.Tests.Base;
 using Blauhaus.Responses.Extensions;
 using NUnit.Framework;
 using Xamarin.Essentials;

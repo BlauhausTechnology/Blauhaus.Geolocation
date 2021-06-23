@@ -15,7 +15,7 @@ using Blauhaus.Reactive.TestHelpers.MockBuilders;
 using Blauhaus.TestHelpers.BaseTests;
 using NUnit.Framework;
 
-namespace Blauhaus.Geolocation.Tests.Tests._Base
+namespace Blauhaus.Geolocation.Tests.Tests.Base
 {
     public class BaseGeolocationTest<TSut> : BaseServiceTest<TSut> where TSut : class
     {

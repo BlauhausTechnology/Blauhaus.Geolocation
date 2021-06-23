@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.Geolocation.Abstractions.Errors;
 using Blauhaus.Geolocation.Abstractions.ValueObjects;
-using Blauhaus.Geolocation.Tests.Tests._Base;
+using Blauhaus.Geolocation.Tests.Tests.Base;
 using Blauhaus.Responses.Extensions;
 using Moq;
 using NUnit.Framework;

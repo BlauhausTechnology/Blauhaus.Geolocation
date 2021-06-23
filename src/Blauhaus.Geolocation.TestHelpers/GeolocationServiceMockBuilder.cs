@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Blauhaus.Errors;
+using Blauhaus.Geolocation.Abstractions.Errors;
 using Blauhaus.Geolocation.Abstractions.Service;
 using Blauhaus.Geolocation.Abstractions.ValueObjects;
+using Blauhaus.Responses;
 using Blauhaus.TestHelpers.MockBuilders;
 using Moq;
 
@@ -16,7 +18,35 @@ namespace Blauhaus.Geolocation.TestHelpers
         public GeolocationServiceMockBuilder()
         {
             Where_Connect_returns(GpsLocation.Default);
+            Where_GetCurrentLocationAsync_succeeds(GpsLocationMockBuilder.Default);
         }
+
+        #region GetCurrentLocationAsync
+        
+        public GeolocationServiceMockBuilder Where_GetCurrentLocationAsync_succeeds(IGpsLocation gpsLocation)
+        {
+            Mock.Setup(x => x.GetCurrentLocationAsync(It.IsAny<LocationAccuracy>()))
+                .ReturnsAsync(Response.Success(gpsLocation));
+            return this;
+        }
+        public GeolocationServiceMockBuilder Where_GetCurrentLocationAsync_succeeds(IGpsLocation gpsLocation, LocationAccuracy locationAccuracy)
+        {
+            Mock.Setup(x => x.GetCurrentLocationAsync(locationAccuracy))
+                .ReturnsAsync(Response.Success(gpsLocation));
+            return this;
+        }
+        public Error Where_GetCurrentLocationAsync_fails(Error? error = null)
+        {
+            error ??= GeolocationErrors.Unexpected;
+
+            Mock.Setup(x => x.GetCurrentLocationAsync(It.IsAny<LocationAccuracy>()))
+                .ReturnsAsync(Response.Failure<IGpsLocation>(error.Value));
+            return error.Value;
+        }
+
+        #endregion
+
+        #region Connect
 
         public GeolocationServiceMockBuilder Where_Connect_returns(IGpsLocation location)
         {
@@ -69,7 +99,6 @@ namespace Blauhaus.Geolocation.TestHelpers
                 }));
             return this;
         }
-
 
         
         public Action<IGpsLocation> Where_Location_can_be_updated()
@@ -124,6 +153,8 @@ namespace Blauhaus.Geolocation.TestHelpers
 
             public IGpsLocation NewLocation { get; }
         }
+
+        #endregion
 
     }
 }

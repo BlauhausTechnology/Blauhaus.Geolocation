@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using Blauhaus.Geolocation.Extensions;
 using Blauhaus.Geolocation.Proxy;
 using Blauhaus.Reactive.Abstractions.Schedulers;
+using Blauhaus.Responses;
 using Xamarin.Essentials;
 
 namespace Blauhaus.Geolocation
@@ -45,7 +47,6 @@ namespace Blauhaus.Geolocation
 
             return Observable.Create<IGpsLocation>(async observer =>
             {
-
                 var permissions = await _devicePermissionsService.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse);
                 if (permissions.IsFailure)
                 {
@@ -70,6 +71,68 @@ namespace Blauhaus.Geolocation
 
                 return disposable;
             });
+        }
+
+        public async Task<Response<IGpsLocation>> GetCurrentLocationAsync(LocationAccuracy accuracy = LocationAccuracy.Medium)
+        {
+
+            try
+            {
+                var permissions = await _devicePermissionsService.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse);
+                if (permissions.IsFailure)
+                { 
+                    return _analyticsService.TraceErrorResponse<IGpsLocation>(this, permissions.Error);
+                }
+
+                var currentLocation = await _proxy.GetCurrentLocationAsync(accuracy.ToGeoLocationRequest());
+
+
+                var currentGpsLocation = GpsLocation.Create(currentLocation.Latitude, currentLocation.Longitude);
+                if (currentGpsLocation.IsFailure)
+                {
+                    return _analyticsService.TraceErrorResponse<IGpsLocation>(this, currentGpsLocation.Error); 
+                }
+                else
+                {
+                    _analyticsService.Trace(this, "Current location returned");
+                    return Response.Success(currentGpsLocation.Value);
+                }
+
+            }
+            catch (Exception e)
+            {
+                return _analyticsService.LogExceptionResponse<IGpsLocation>(this, e, GeolocationErrors.Unexpected);
+            }
+
+            //try
+            //{
+            //    var currentLocation = await _proxy.GetCurrentLocationAsync(new GeolocationRequest());
+            //    if (currentLocation == null)
+            //    {
+            //        _analyticsService.TraceWarning(this, $"{description} location is null");
+            //    }
+            //    else
+            //    {
+            //        var currentGpsLocation = GpsLocation.Create(currentLocation.Latitude, currentLocation.Longitude);
+            //        if (currentGpsLocation.IsFailure)
+            //        {
+            //            _analyticsService.TraceError(this, currentGpsLocation.Error, currentLocation.ToObjectDictionary());
+            //            observer.OnError(new ErrorException(currentGpsLocation.Error));
+            //        }
+            //        else
+            //        {
+            //            _analyticsService.Debug($"{description} location published");
+            //            observer.OnNext(currentGpsLocation.Value);
+            //        }
+            //    }
+            //}
+            //catch (Exception e)
+            //{
+            //    _analyticsService.LogException(this, e);
+            //    observer.OnError(new ErrorException(GeolocationErrors.Unexpected, e));
+            //}
+
+            return Response.Failure<IGpsLocation>(Errors.Errors.InvalidValue());
         }
 
         private async Task PublishLastKnownLocationAsync(IObserver<IGpsLocation> observer)
