@@ -100,7 +100,8 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
                 s.Length -= 2;
 
             return s.ToString();
-
         }
+
+        public static Address Empty = new Address(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
     }
 }

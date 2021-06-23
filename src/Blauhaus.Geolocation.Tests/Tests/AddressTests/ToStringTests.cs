@@ -1,5 +1,4 @@
-﻿using Blauhaus.Geolocation.Abstractions.ValueObjects;
-using Blauhaus.Geolocation.TestHelpers;
+﻿using Blauhaus.Geolocation.TestHelpers;
 using NUnit.Framework;
 
 namespace Blauhaus.Geolocation.Tests.Tests.AddressTests

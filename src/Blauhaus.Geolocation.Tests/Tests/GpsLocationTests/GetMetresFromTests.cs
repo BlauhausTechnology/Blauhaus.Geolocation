@@ -1,6 +1,4 @@
-﻿using Blauhaus.Geolocation.Abstractions;
-using Blauhaus.Geolocation.Abstractions.ValueObjects;
-using Blauhaus.Geolocation.Tests.Tests._Base;
+﻿using Blauhaus.Geolocation.Abstractions.ValueObjects;
 using NUnit.Framework;
 
 namespace Blauhaus.Geolocation.Tests.Tests.GpsLocationTests
