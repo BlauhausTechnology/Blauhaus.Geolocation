@@ -75,7 +75,6 @@ namespace Blauhaus.Geolocation
 
         public async Task<Response<IGpsLocation>> GetCurrentLocationAsync(LocationAccuracy accuracy = LocationAccuracy.Medium)
         {
-
             try
             {
                 var permissions = await _devicePermissionsService.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse);
@@ -84,55 +83,35 @@ namespace Blauhaus.Geolocation
                     return _analyticsService.TraceErrorResponse<IGpsLocation>(this, permissions.Error);
                 }
 
-                var currentLocation = await _proxy.GetCurrentLocationAsync(accuracy.ToGeoLocationRequest());
+                var lastKnownLocation = await _proxy.GetLastKnownLocationAsync();
+                if (lastKnownLocation != null)
+                {
+                    var lastLocation = GpsLocation.Create(lastKnownLocation.Latitude, lastKnownLocation.Longitude);
+                    if (lastLocation.IsFailure)
+                    {
+                        return _analyticsService.TraceErrorResponse<IGpsLocation>(this, lastLocation.Error); 
+                    }
 
+                    _analyticsService.TraceVerbose(this, "Last known location returned", lastLocation.Value.ToObjectDictionary());
+                    return Response.Success(lastLocation.Value);
+                }
+
+                var currentLocation = await _proxy.GetCurrentLocationAsync(accuracy.ToGeoLocationRequest());
 
                 var currentGpsLocation = GpsLocation.Create(currentLocation.Latitude, currentLocation.Longitude);
                 if (currentGpsLocation.IsFailure)
                 {
                     return _analyticsService.TraceErrorResponse<IGpsLocation>(this, currentGpsLocation.Error); 
                 }
-                else
-                {
-                    _analyticsService.Trace(this, "Current location returned");
-                    return Response.Success(currentGpsLocation.Value);
-                }
+
+                _analyticsService.TraceVerbose(this, "Current location returned", currentGpsLocation.ToObjectDictionary());
+                return Response.Success(currentGpsLocation.Value);
 
             }
             catch (Exception e)
             {
                 return _analyticsService.LogExceptionResponse<IGpsLocation>(this, e, GeolocationErrors.Unexpected);
             }
-
-            //try
-            //{
-            //    var currentLocation = await _proxy.GetCurrentLocationAsync(new GeolocationRequest());
-            //    if (currentLocation == null)
-            //    {
-            //        _analyticsService.TraceWarning(this, $"{description} location is null");
-            //    }
-            //    else
-            //    {
-            //        var currentGpsLocation = GpsLocation.Create(currentLocation.Latitude, currentLocation.Longitude);
-            //        if (currentGpsLocation.IsFailure)
-            //        {
-            //            _analyticsService.TraceError(this, currentGpsLocation.Error, currentLocation.ToObjectDictionary());
-            //            observer.OnError(new ErrorException(currentGpsLocation.Error));
-            //        }
-            //        else
-            //        {
-            //            _analyticsService.Debug($"{description} location published");
-            //            observer.OnNext(currentGpsLocation.Value);
-            //        }
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    _analyticsService.LogException(this, e);
-            //    observer.OnError(new ErrorException(GeolocationErrors.Unexpected, e));
-            //}
-
-            return Response.Failure<IGpsLocation>(Errors.Errors.InvalidValue());
         }
 
         private async Task PublishLastKnownLocationAsync(IObserver<IGpsLocation> observer)
