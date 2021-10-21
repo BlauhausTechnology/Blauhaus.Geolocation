@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Globalization;
-using Blauhaus.Common.ValueObjects._Base;
+using Blauhaus.Common.ValueObjects.Base;
 using Blauhaus.Errors;
 using Blauhaus.Geolocation.Abstractions.Errors;
 using Blauhaus.Responses;

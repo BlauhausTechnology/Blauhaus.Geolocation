@@ -5,9 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blauhaus.Common.ValueObjects" Version="1.11.0" />
-    <PackageReference Include="Blauhaus.Errors" Version="0.3.7" />
-    <PackageReference Include="Blauhaus.Responses" Version="0.3.7" />
+    <PackageReference Include="Blauhaus.Common.ValueObjects" Version="1.12.6" />
+    <PackageReference Include="Blauhaus.Errors" Version="0.4.4" />
+    <PackageReference Include="Blauhaus.Responses" Version="0.4.4" />
   </ItemGroup>
 
 </Project>

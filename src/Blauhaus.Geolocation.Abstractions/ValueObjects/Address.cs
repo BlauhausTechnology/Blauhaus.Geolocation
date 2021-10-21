@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Blauhaus.Common.ValueObjects._Base;
+using Blauhaus.Common.ValueObjects.Base;
 
 namespace Blauhaus.Geolocation.Abstractions.ValueObjects
 {

@@ -11,11 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blauhaus.Analytics.TestHelpers" Version="1.6.13" />
-    <PackageReference Include="Blauhaus.DeviceServices.TestHelpers" Version="1.0.3" />
+    <PackageReference Include="Blauhaus.Analytics.TestHelpers" Version="1.7.3" />
+    <PackageReference Include="Blauhaus.DeviceServices.TestHelpers" Version="1.0.12" />
     <PackageReference Include="nunit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
   </ItemGroup>
 
   <ItemGroup>
