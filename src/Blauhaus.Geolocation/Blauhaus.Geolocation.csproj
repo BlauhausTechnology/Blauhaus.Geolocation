@@ -11,9 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blauhaus.Analytics.Abstractions" Version="1.7.3" />
-    <PackageReference Include="Blauhaus.DeviceServices" Version="1.0.12" />
-    <PackageReference Include="Blauhaus.DeviceServices.Abstractions" Version="1.0.12" />
+    <PackageReference Include="Blauhaus.Analytics.Abstractions" Version="1.8.41" />
+    <PackageReference Include="Blauhaus.DeviceServices" Version="1.1.8" />
+    <PackageReference Include="Blauhaus.DeviceServices.Abstractions" Version="1.1.8" />
     <PackageReference Include="Blauhaus.Reactive" Version="0.0.2" />
   </ItemGroup>
 
