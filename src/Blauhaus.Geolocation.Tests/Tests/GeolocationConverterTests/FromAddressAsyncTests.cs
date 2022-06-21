@@ -47,7 +47,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
             var result = await Sut.FromAddressAsync("");
 
             //Assert
-            result.VerifyResponseError(GeolocationErrors.EmptyAddress, MockAnalyticsService); 
+            Assert.That(result.IsError(GeolocationError.EmptyAddress)); 
         }
 
         [Test]
@@ -60,18 +60,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
             Assert.That(result.Value.Latitude, Is.EqualTo(_location.Latitude));
             Assert.That(result.Value.Longitude, Is.EqualTo(_location.Longitude));
         }
-
-        [Test]
-        public async Task SHOULD_trace_success()
-        {
-            //Act
-            await Sut.FromAddressAsync(_addressString);
-
-            //Assert
-            MockAnalyticsService.VerifyTrace("GPS cooridnates found from address");
-            MockAnalyticsService.VerifyTraceProperty("Address", _addressString);
-        }
-
+ 
         [Test]
         public async Task IF_no_locations_found_SHOULD_Error_and_trace()
         {
@@ -81,10 +70,8 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
             //Act
             var result = await Sut.FromAddressAsync(_addressString);
 
-            //Assert
-            MockAnalyticsService.VerifyTrace("No GPS coordinates found for given address", LogSeverity.Warning);
-            MockAnalyticsService.VerifyTraceProperty("Address", _addressString);
-            Assert.That(result.IsError(GeolocationErrors.GpsCoordinatesNotFound));
+            //Assert 
+            Assert.That(result.IsError(GeolocationError.GpsCoordinatesNotFound));
         }
 
         
@@ -98,8 +85,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
             var result = await Sut.FromAddressAsync(_addressString);
 
             //Assert
-            Assert.That(result.IsError(GeolocationErrors.GpsLookupFailed));
-            MockAnalyticsService.VerifyLogException<Exception>("oops");
+            Assert.That(result.IsError(GeolocationError.GpsLookupFailed)); 
         }
     }
 }

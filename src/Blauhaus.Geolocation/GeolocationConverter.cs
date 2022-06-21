@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Blauhaus.Analytics.Abstractions;
 using Blauhaus.Analytics.Abstractions.Extensions;
 using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.Geolocation.Abstractions.Errors;
@@ -10,27 +11,28 @@ using Blauhaus.Geolocation.Extensions;
 using Blauhaus.Geolocation.Proxy;
 using Blauhaus.Responses;
 using Blauhaus.Responses.Extensions;
+using Microsoft.Extensions.Logging;
 using Xamarin.Essentials;
 
 namespace Blauhaus.Geolocation
 {
     public class GeolocationConverter : IGeolocationConverter
     {
-        private readonly IAnalyticsService _analyticsService;
+        private readonly IAnalyticsLogger<GeolocationConverter> _logger;
         private readonly IGeolocationProxy _proxy;
 
         public GeolocationConverter(
-            IAnalyticsService analyticsService,
+            IAnalyticsLogger<GeolocationConverter> logger,
             IGeolocationProxy proxy)
         {
-            _analyticsService = analyticsService;
+            _logger = logger;
             _proxy = proxy;
         }
         public async Task<Response<Address>> ToAddressAsync(IGpsLocation gpsLocation)
         {
             if (gpsLocation == null)
             {
-                return _analyticsService.TraceErrorResponse<Address>(this, GeolocationErrors.EmptyLocation);
+                return _logger.LogErrorResponse<Address>(GeolocationError.EmptyLocation);
             }
             try
             {
@@ -39,20 +41,19 @@ namespace Blauhaus.Geolocation
 
                 if (bestMatch == null)
                 {
-                    _analyticsService.TraceWarning(this, "No address found for Gps coordinates", gpsLocation.ToObjectDictionary());
-                    return GeolocationErrors.AddressNotFound.ToResponse<Address>();
+                    _logger.LogWarning("No address found for Gps coordinates {@GeoLocation}", gpsLocation);
+                    return GeolocationError.AddressNotFound.ToResponse<Address>();
                 }
 
                 var address = bestMatch.ToAddress();
 
-                _analyticsService.TraceVerbose(this, "Address found from GPS coordinates", gpsLocation.ToObjectDictionary()
-                    .WithValue("Address", address.ToString()));
+                _logger.LogDebug("Address found from GPS coordinates {@Geolocation}", gpsLocation);
 
                 return Response.Success(address);
             }
             catch (Exception e)
             {
-                return _analyticsService.LogExceptionResponse<Address>(this, e, GeolocationErrors.AddressLookupFailed, gpsLocation.ToObjectDictionary("GpsLocation"));
+                return _logger.LogErrorResponse<Address>(GeolocationError.AddressLookupFailed, e);
             }
         }
 
@@ -60,7 +61,7 @@ namespace Blauhaus.Geolocation
         {
             if (string.IsNullOrEmpty(address))
             {
-                return _analyticsService.TraceErrorResponse<IGpsLocation>(this, GeolocationErrors.EmptyAddress);
+                return _logger.LogErrorResponse<IGpsLocation>(GeolocationError.EmptyAddress);
             }
             try
             {
@@ -69,21 +70,19 @@ namespace Blauhaus.Geolocation
 
                 if (bestMatch == null)
                 {
-                    _analyticsService.TraceWarning(this, "No GPS coordinates found for given address", address.ToObjectDictionary("Address"));
-                    return GeolocationErrors.GpsCoordinatesNotFound.ToResponse<IGpsLocation>();
+                    return _logger.LogErrorResponse<IGpsLocation>(GeolocationError.GpsCoordinatesNotFound);
                 }
                 
                 var gpsLocation = bestMatch.ToGpsLocation();
                 
-                _analyticsService.TraceVerbose(this, "GPS cooridnates found from address", gpsLocation.ToObjectDictionary()
-                    .WithValue("Address", address));
+                _logger.LogTrace("GPS cooridnates found from address {@GeoLocation}", gpsLocation);
 
                 return Response.Success<IGpsLocation>(gpsLocation);
 
             }
             catch (Exception e)
             {
-                return _analyticsService.LogExceptionResponse<IGpsLocation>(this, e, GeolocationErrors.GpsLookupFailed, address.ToObjectDictionary("AddressString"));
+                return _logger.LogErrorResponse<IGpsLocation>(GeolocationError.GpsLookupFailed, e);
             }
         }
     }

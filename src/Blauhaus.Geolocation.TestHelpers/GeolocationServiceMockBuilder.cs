@@ -37,7 +37,7 @@ namespace Blauhaus.Geolocation.TestHelpers
         }
         public Error Where_GetCurrentLocationAsync_fails(Error? error = null)
         {
-            error ??= GeolocationErrors.Unexpected;
+            error ??= GeolocationError.Unexpected;
 
             Mock.Setup(x => x.GetCurrentLocationAsync(It.IsAny<LocationAccuracy>()))
                 .ReturnsAsync(Response.Failure<IGpsLocation>(error.Value));

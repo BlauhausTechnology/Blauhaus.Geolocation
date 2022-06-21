@@ -10,7 +10,9 @@ using Xamarin.Essentials;
 using Blauhaus.Geolocation.Abstractions.Service;
 using Blauhaus.Geolocation.Abstractions.Errors;
 using Blauhaus.Analytics.Abstractions.Service;
+using Blauhaus.Errors;
 using Blauhaus.Errors.Extensions;
+using Blauhaus.Responses.Extensions;
 
 namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
 {
@@ -49,7 +51,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var result = await Sut.GetCurrentLocationAsync();
 
                 //Assert
-                result.VerifyResponseError(Errors.Errors.Cancelled, MockAnalyticsService);
+                Assert.That(result.Error, Is.EqualTo(Error.Cancelled));
 
             }
         }
@@ -72,7 +74,6 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 //Assert 
                 Assert.That(result.Value.Latitude, Is.EqualTo(2));
                 Assert.That(result.Value.Longitude, Is.EqualTo(3));
-                MockAnalyticsService.VerifyTrace("Last known location returned");
 
             }
 
@@ -102,7 +103,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var result = await Sut.GetCurrentLocationAsync();
 
                 //Assert
-                result.VerifyResponseError(GeolocationErrors.InvalidLatitude, MockAnalyticsService);
+                Assert.That(result.IsError(GeolocationError.InvalidLatitude));
             }
             
             [Test]
@@ -115,7 +116,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var result = await Sut.GetCurrentLocationAsync();
 
                 //Assert
-                result.VerifyResponseException(GeolocationErrors.Unexpected, "oops", MockAnalyticsService);
+                Assert.That(result.IsError(GeolocationError.Unexpected));
             }
         }
 
@@ -141,7 +142,6 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 //Assert
                 Assert.That(result.Value.Latitude, Is.EqualTo(12));
                 Assert.That(result.Value.Longitude, Is.EqualTo(22));
-                MockAnalyticsService.VerifyTrace("Current location returned");
             }
 
             [TestCase(LocationAccuracy.High, GeolocationAccuracy.Best)]
@@ -169,7 +169,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var result = await Sut.GetCurrentLocationAsync();
 
                 //Assert
-                result.VerifyResponseException(GeolocationErrors.Unexpected, "oops", MockAnalyticsService);
+                Assert.That(result.IsError(GeolocationError.Unexpected));
             }
 
             [Test]
@@ -182,7 +182,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var result = await Sut.GetCurrentLocationAsync();
 
                 //Assert
-                result.VerifyResponseError(GeolocationErrors.InvalidLatitude, MockAnalyticsService);
+                Assert.That(result.IsError(GeolocationError.InvalidLatitude)); 
             }
 
         }

@@ -17,10 +17,10 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
         public GpsLocation(double latitude, double longitude)
         {
             if (latitude > 90 || latitude < -90)
-                throw new ErrorException(GeolocationErrors.InvalidLatitude); 
+                throw new ErrorException(GeolocationError.InvalidLatitude); 
 
             if (longitude > 180 || longitude < -180)
-                throw new ErrorException(GeolocationErrors.InvalidLongitude); 
+                throw new ErrorException(GeolocationError.InvalidLongitude); 
 
             Latitude = latitude;
             Longitude = longitude;
@@ -29,10 +29,10 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
         public static Response<IGpsLocation> Create(double latitude, double longitude)
         {
             if (latitude > 90 || latitude < -90)
-                return GeolocationErrors.InvalidLatitude.ToResponse<IGpsLocation>(); 
+                return GeolocationError.InvalidLatitude.ToResponse<IGpsLocation>(); 
 
             if (longitude > 180 || longitude < -180)
-                return GeolocationErrors.InvalidLongitude.ToResponse<IGpsLocation>();
+                return GeolocationError.InvalidLongitude.ToResponse<IGpsLocation>();
 
             return Response.Success<IGpsLocation>(new GpsLocation(latitude, longitude));
         }
@@ -40,12 +40,12 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
         public static Response<IGpsLocation> Parse(string serializedGpsLocation)
         {
             if (string.IsNullOrEmpty(serializedGpsLocation))
-                return GeolocationErrors.InvalidSerialization().ToResponse<IGpsLocation>();
+                return GeolocationError.InvalidSerialization().ToResponse<IGpsLocation>();
 
             var coordinateStrings = serializedGpsLocation.Split(',');
 
             if(coordinateStrings.Length != 2)
-                return GeolocationErrors.InvalidSerialization().ToResponse<IGpsLocation>();
+                return GeolocationError.InvalidSerialization().ToResponse<IGpsLocation>();
 
             try
             {
@@ -55,7 +55,7 @@ namespace Blauhaus.Geolocation.Abstractions.ValueObjects
             }
             catch (Exception e)
             {
-                return GeolocationErrors.InvalidSerialization(e.Message).ToResponse<IGpsLocation>();
+                return GeolocationError.InvalidSerialization(e.Message).ToResponse<IGpsLocation>();
             }
         }
 

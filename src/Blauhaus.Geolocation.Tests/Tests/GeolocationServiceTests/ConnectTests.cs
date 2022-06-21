@@ -60,7 +60,6 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var errorException = exception as ErrorException;
                 Assert.That(errorException, Is.Not.Null);
                 Assert.That(errorException.Error, Is.EqualTo(DevicePermissionErrors.PermissionUnknown("perm")));
-                MockAnalyticsService.VerifyTrace("Failed to access GpsLocation due to permissions failure", LogSeverity.Warning);
 
             }
         }
@@ -76,19 +75,6 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             }
 
             [Test]
-            public async Task SHOULD_Trace_connection()
-            { 
-                //Arrange
-                _requirements = new GeolocationRequirements(TimeSpan.FromMinutes(1), LocationAccuracy.Low);
-
-                //Act
-                Sut.Connect(_requirements).Subscribe(next => {  });
-
-                //Assert
-                MockAnalyticsService.VerifyTrace("New GpsLocation connection requested with accuracy Low and interval 00:01:00");
-            }
-
-            [Test]
             public async Task SHOULD_publish_last_known_location_and_trace()
             { 
                 //Act
@@ -99,21 +85,8 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 //Assert
                 Assert.That(locations[0].Latitude, Is.EqualTo(12));
                 Assert.That(locations[0].Longitude, Is.EqualTo(22));
-                MockAnalyticsService.VerifyTrace("Last known location published");
             }
 
-            [Test]
-            public async Task IF_last_known_location_is_null_SHOULD_trace()
-            {
-                //Arrange
-                MockProxy.Where_GetLastKnownLocationAsync_returns(null);
-
-                //Act
-                Sut.Connect(_requirements).Subscribe(next => { }, ex => { ExceptionTaskCompletionSource.SetResult(ex); });
-
-                //Assert
-                MockAnalyticsService.VerifyTrace("Last known location is null");
-            }
 
             [Test]
             public async Task IF_last_known_location_is_invalid_SHOULD_error()
@@ -126,8 +99,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var exception = await ExceptionTaskCompletionSource.Task;
 
                 //Assert
-                Assert.That(exception.ToError(), Is.EqualTo(GeolocationErrors.InvalidLatitude));
-                MockAnalyticsService.VerifyTrace(GeolocationErrors.InvalidLatitude.ToString(), LogSeverity.Error);
+                Assert.That(exception.ToError(), Is.EqualTo(GeolocationError.InvalidLatitude));
             }
 
             [Test]
@@ -141,9 +113,8 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var exception = await ExceptionTaskCompletionSource.Task;
 
                 //Assert
-                Assert.That(exception.ToError(), Is.EqualTo(GeolocationErrors.Unexpected));
+                Assert.That(exception.ToError(), Is.EqualTo(GeolocationError.Unexpected));
                 Assert.That(exception.InnerException.Message, Is.EqualTo("oops"));
-                MockAnalyticsService.VerifyLogException<Exception>("oops");
             }
         }
 
@@ -170,23 +141,8 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 //Assert
                 Assert.That(locations[0].Latitude, Is.EqualTo(12));
                 Assert.That(locations[0].Longitude, Is.EqualTo(22));
-                MockAnalyticsService.Mock.Verify(x => x.Debug("Current location published",  
-                    It.IsAny<Dictionary<string, object>>()), Times.Exactly(1));
             }
-            
-            [Test]
-            public async Task IF_current_location_is_null_SHOULD_warn()
-            {
-                //Arrange
-                MockProxy.Where_GetCurrentLocationAsync_returns(null);
-
-                //Act
-                Sut.Connect(_requirements).Subscribe(next => { }, ex => { ExceptionTaskCompletionSource.SetResult(ex); });
-
-                //Assert
-                MockAnalyticsService.VerifyTrace("Current location is null", LogSeverity.Warning);
-            }
-
+             
             [Test]
             public async Task IF_current_location_is_invalid_SHOULD_error()
             {
@@ -198,8 +154,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var exception = await ExceptionTaskCompletionSource.Task;
 
                 //Assert
-                Assert.That(exception.ToError(), Is.EqualTo(GeolocationErrors.InvalidLatitude));
-                MockAnalyticsService.VerifyTrace(GeolocationErrors.InvalidLatitude.ToString(), LogSeverity.Error);
+                Assert.That(exception.ToError(), Is.EqualTo(GeolocationError.InvalidLatitude));
             }
 
             [Test]
@@ -213,9 +168,8 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 var exception = await ExceptionTaskCompletionSource.Task;
 
                 //Assert
-                Assert.That(exception.ToError(), Is.EqualTo(GeolocationErrors.Unexpected));
+                Assert.That(exception.ToError(), Is.EqualTo(GeolocationError.Unexpected));
                 Assert.That(exception.InnerException.Message, Is.EqualTo("oops"));
-                MockAnalyticsService.VerifyLogException<Exception>("oops");
             }
             
             [TestCase(LocationAccuracy.High, GeolocationAccuracy.Best)]
@@ -285,9 +239,6 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 _testScheduler.AdvanceBy(1000);
                 var third = await result3.Task;
                 Assert.That(third.Latitude, Is.EqualTo(2));
-                 
-                MockAnalyticsService.Mock.Verify(x => x.Debug("Updated location published",  
-                    It.IsAny<Dictionary<string, object>>()), Times.Exactly(3));
                 disposable.Dispose();
             }
             
@@ -318,9 +269,8 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 _testScheduler.AdvanceBy(1000);
                 var second = await result2.Task;
 
-                Assert.That(second.ToError(), Is.EqualTo(GeolocationErrors.Unexpected));
+                Assert.That(second.ToError(), Is.EqualTo(GeolocationError.Unexpected));
                 Assert.That(second.InnerException.Message, Is.EqualTo("oops"));
-                MockAnalyticsService.VerifyLogException<Exception>("oops");
                 disposable.Dispose();
             }
 
@@ -351,8 +301,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 _testScheduler.AdvanceBy(1000);
                 var second = await result2.Task;
                 
-                Assert.That(second.ToError(), Is.EqualTo(GeolocationErrors.InvalidLongitude));
-                MockAnalyticsService.VerifyTrace(GeolocationErrors.InvalidLongitude.ToString(), LogSeverity.Error);
+                Assert.That(second.ToError(), Is.EqualTo(GeolocationError.InvalidLongitude));
                 disposable.Dispose();
             }
             
@@ -367,7 +316,6 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
                 //Assert
                 MockProxy.Where_GetCurrentLocationAsync_returns(null);  
                 _testScheduler.AdvanceBy(1000);
-                MockAnalyticsService.VerifyTrace("Updated location is null", LogSeverity.Warning);
                 disposable.Dispose();
             }
 

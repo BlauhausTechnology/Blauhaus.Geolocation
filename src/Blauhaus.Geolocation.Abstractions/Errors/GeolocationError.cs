@@ -2,7 +2,7 @@
 
 namespace Blauhaus.Geolocation.Abstractions.Errors
 {
-    public static class GeolocationErrors
+    public static class GeolocationError
     {
         public static readonly Error Unexpected = Error.Create("An unexpected error occured while attempting to access geolocation services");
        

@@ -3,6 +3,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Blauhaus.Analytics.Abstractions;
 using Blauhaus.Analytics.Abstractions.Extensions;
 using Blauhaus.Analytics.Abstractions.Service;
 using Blauhaus.DeviceServices.Abstractions.Permissions;
@@ -14,24 +15,25 @@ using Blauhaus.Geolocation.Extensions;
 using Blauhaus.Geolocation.Proxy;
 using Blauhaus.Reactive.Abstractions.Schedulers;
 using Blauhaus.Responses;
+using Microsoft.Extensions.Logging;
 using Xamarin.Essentials;
 
 namespace Blauhaus.Geolocation
 {
     public class GeolocationService : IGeolocationService
     {
-        private readonly IAnalyticsService _analyticsService;
+        private readonly IAnalyticsLogger<GeolocationService> _logger;
         private readonly IDevicePermissionsService _devicePermissionsService;
         private readonly IReactiveSchedulers _schedulers;
         private readonly IGeolocationProxy _proxy;
 
         public GeolocationService(
-            IAnalyticsService analyticsService,
+            IAnalyticsLogger<GeolocationService> logger,
             IDevicePermissionsService devicePermissionsService,
             IReactiveSchedulers schedulers,
             IGeolocationProxy proxy)
         {
-            _analyticsService = analyticsService;
+            _logger = logger;
             _devicePermissionsService = devicePermissionsService;
             _schedulers = schedulers;
             _proxy = proxy;
@@ -43,14 +45,14 @@ namespace Blauhaus.Geolocation
             var interval = requirements.UpdateInterval;
             var requiredAccuracy = requirements.Accuracy;
 
-            _analyticsService.TraceVerbose(this, $"New GpsLocation connection requested with accuracy {requiredAccuracy} and interval {interval}");
+            _logger.LogDebug("New GpsLocation connection requested with accuracy {GeolocationAccuracy} and interval {UpdateInterval}", requiredAccuracy, interval);
 
             return Observable.Create<IGpsLocation>(async observer =>
             {
                 var permissions = await _devicePermissionsService.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse);
                 if (permissions.IsFailure)
                 {
-                    _analyticsService.TraceWarning(this, "Failed to access GpsLocation due to permissions failure");
+                    _logger.LogWarning("Failed to access GpsLocation due to permissions failure {Error}", permissions.Error);
                     observer.OnError(new ErrorException(permissions.Error));
                 }
 
@@ -80,7 +82,7 @@ namespace Blauhaus.Geolocation
                 var permissions = await _devicePermissionsService.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse);
                 if (permissions.IsFailure)
                 { 
-                    return _analyticsService.TraceErrorResponse<IGpsLocation>(this, permissions.Error);
+                    return _logger.LogErrorResponse<IGpsLocation>(permissions.Error);
                 }
 
                 var lastKnownLocation = await _proxy.GetLastKnownLocationAsync();
@@ -89,10 +91,10 @@ namespace Blauhaus.Geolocation
                     var lastLocation = GpsLocation.Create(lastKnownLocation.Latitude, lastKnownLocation.Longitude);
                     if (lastLocation.IsFailure)
                     {
-                        return _analyticsService.TraceErrorResponse<IGpsLocation>(this, lastLocation.Error); 
+                        return _logger.LogErrorResponse<IGpsLocation>(lastLocation.Error); 
                     }
 
-                    _analyticsService.TraceVerbose(this, "Last known location returned", lastLocation.Value.ToObjectDictionary());
+                    _logger.LogDebug("Last known location returned: {@Location}", lastLocation.Value);
                     return Response.Success(lastLocation.Value);
                 }
 
@@ -101,16 +103,16 @@ namespace Blauhaus.Geolocation
                 var currentGpsLocation = GpsLocation.Create(currentLocation.Latitude, currentLocation.Longitude);
                 if (currentGpsLocation.IsFailure)
                 {
-                    return _analyticsService.TraceErrorResponse<IGpsLocation>(this, currentGpsLocation.Error); 
+                    return _logger.LogErrorResponse<IGpsLocation>(currentGpsLocation.Error); 
                 }
 
-                _analyticsService.TraceVerbose(this, "Current location returned", currentGpsLocation.ToObjectDictionary());
+                _logger.LogTrace("Current location returned: {@Location}", currentGpsLocation);
                 return Response.Success(currentGpsLocation.Value);
 
             }
             catch (Exception e)
             {
-                return _analyticsService.LogExceptionResponse<IGpsLocation>(this, e, GeolocationErrors.Unexpected);
+                return _logger.LogErrorResponse<IGpsLocation>(GeolocationError.Unexpected, e);
             }
         }
 
@@ -121,19 +123,19 @@ namespace Blauhaus.Geolocation
                 var lastKnownLocation = await _proxy.GetLastKnownLocationAsync();
                 if (lastKnownLocation == null)
                 {
-                    _analyticsService.Trace(this, "Last known location is null");
+                    _logger.LogDebug("Last known location is null");
                 }
                 else
                 {
                     var lastLocation = GpsLocation.Create(lastKnownLocation.Latitude, lastKnownLocation.Longitude);
                     if (lastLocation.IsFailure)
                     {
-                        _analyticsService.TraceError(this, lastLocation.Error, lastKnownLocation.ToObjectDictionary());
+                        _logger.LogError(lastLocation.Error);
                         observer.OnError(new ErrorException(lastLocation.Error));
                     }
                     else
                     {
-                        _analyticsService.Trace(this, "Last known location published");
+                        _logger.LogTrace("Last known location published: {@Location}", lastLocation.Value);
                         observer.OnNext(lastLocation.Value);
                     }
                 }
@@ -141,8 +143,8 @@ namespace Blauhaus.Geolocation
             }
             catch (Exception e)
             {
-                _analyticsService.LogException(this, e);
-                observer.OnError(new ErrorException(GeolocationErrors.Unexpected, e));
+                _logger.LogError(GeolocationError.Unexpected, e);
+                observer.OnError(new ErrorException(GeolocationError.Unexpected, e));
             }
         }
 
@@ -153,27 +155,27 @@ namespace Blauhaus.Geolocation
                 var currentLocation = await _proxy.GetCurrentLocationAsync(geolocationRequest);
                 if (currentLocation == null)
                 {
-                    _analyticsService.TraceWarning(this, $"{description} location is null");
+                    _logger.LogWarning($"{description} location is null");
                 }
                 else
                 {
                     var currentGpsLocation = GpsLocation.Create(currentLocation.Latitude, currentLocation.Longitude);
                     if (currentGpsLocation.IsFailure)
                     {
-                        _analyticsService.TraceError(this, currentGpsLocation.Error, currentLocation.ToObjectDictionary());
+                        _logger.LogError( currentGpsLocation.Error);
                         observer.OnError(new ErrorException(currentGpsLocation.Error));
                     }
                     else
                     {
-                        _analyticsService.Debug($"{description} location published");
+                        _logger.LogTrace($"{description} location published");
                         observer.OnNext(currentGpsLocation.Value);
                     }
                 }
             }
             catch (Exception e)
             {
-                _analyticsService.LogException(this, e);
-                observer.OnError(new ErrorException(GeolocationErrors.Unexpected, e));
+                _logger.LogError(GeolocationError.Unexpected, e);
+                observer.OnError(new ErrorException(GeolocationError.Unexpected, e));
             }
             
         }

@@ -69,18 +69,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
             Assert.That(result.Value.Country, Is.EqualTo(_placemark.CountryName));
             Assert.That(result.Value.CountryCode, Is.EqualTo(_placemark.CountryCode));
         }
-        
-        [Test]
-        public async Task SHOULD_trace_success()
-        {
-            //Act
-            await Sut.ToAddressAsync(_gpsLocation);
-
-            //Assert
-            MockAnalyticsService.VerifyTrace("Address found from GPS coordinates");
-            MockAnalyticsService.VerifyTraceProperty("Address", "feature name, sub thoroughfare thoroughfare, sub locality, sub admin area, locality, admin area, postal code, country name");
-            MockAnalyticsService.VerifyTraceProperty(nameof(GpsLocation), _gpsLocation);
-        }
+         
         [Test]
         public async Task IF_no_placemarks_found_SHOULD_Error_and_trace()
         {
@@ -90,10 +79,8 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
             //Act
             var result = await Sut.ToAddressAsync(_gpsLocation);
 
-            //Assert
-            MockAnalyticsService.VerifyTrace("No address found for Gps coordinates", LogSeverity.Warning);
-            MockAnalyticsService.VerifyTraceProperty(nameof(GpsLocation), _gpsLocation);
-            Assert.That(result.IsError(GeolocationErrors.AddressNotFound));
+            //Assert 
+            Assert.That(result.IsError(GeolocationError.AddressNotFound));
         }
 
         
@@ -107,8 +94,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationConverterTests
             var result = await Sut.ToAddressAsync(_gpsLocation);
 
             //Assert
-            Assert.That(result.IsError(GeolocationErrors.AddressLookupFailed));
-            MockAnalyticsService.VerifyLogException<Exception>("oops");
+            Assert.That(result.IsError(GeolocationError.AddressLookupFailed)); 
         }
     }
 }
