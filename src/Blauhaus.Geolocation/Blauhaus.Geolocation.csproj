@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-      <LangVersion>8</LangVersion>
+      <LangVersion>9</LangVersion>
+      <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blauhaus.Analytics.Abstractions" Version="1.8.41" />
+    <PackageReference Include="Blauhaus.Analytics.Abstractions" Version="1.8.43" />
     <PackageReference Include="Blauhaus.DeviceServices" Version="1.1.8" />
     <PackageReference Include="Blauhaus.DeviceServices.Abstractions" Version="1.1.8" />
     <PackageReference Include="Blauhaus.Reactive" Version="0.0.2" />

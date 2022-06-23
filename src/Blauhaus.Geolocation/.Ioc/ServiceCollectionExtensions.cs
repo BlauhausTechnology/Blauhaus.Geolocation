@@ -11,6 +11,7 @@ namespace Blauhaus.Geolocation.Ioc
         {
             services.AddSingleton<IGeolocationService, GeolocationService>();
             services.AddTransient<IGeolocationProxy, XamarinEssentialsGeolocationProxy>();
+            services.AddTransient<IGeolocationPublisher, GeolocationPublisher>();
             services.AddReactiveScheduler();
             return services;
         }
