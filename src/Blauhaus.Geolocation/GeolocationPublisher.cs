@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Blauhaus.Analytics.Abstractions;
 using Blauhaus.Analytics.Abstractions.Extensions;
-using Blauhaus.Common.Abstractions;
 using Blauhaus.Common.Utils.Disposables;
 using Blauhaus.DeviceServices.Abstractions.Thread;
 using Blauhaus.Geolocation.Abstractions.Errors;
@@ -41,12 +40,21 @@ namespace Blauhaus.Geolocation
                 throw new InvalidOperationException("GeolocationPublisher must be initialized before use");
             }
 
+            var currentLocation = await Xamarin.Essentials.Geolocation.GetLastKnownLocationAsync();
+            if (currentLocation != null)
+            {
+                _currentLocation = new GpsLocation(currentLocation.Latitude, currentLocation.Longitude);
+                _logger.LogTrace("Last known location: Lat {Latitude}, | Long {Longitude}", _currentLocation.Latitude, _currentLocation.Longitude);
+            }
+            
             _logger.LogDebug("Subscribing to {GeolocationAccuracy} geolocation updates with frequency {UpdateInternal}", 
                 _geolocationRequirements.UpdateInterval,_geolocationRequirements.Accuracy );
 
-            _timer = new Timer(TimerCallback, null, TimeSpan.Zero, _geolocationRequirements.UpdateInterval);
-             
             var disposable = await base.SubscribeAsync(handler, filter);
+            
+            _timer = new Timer(TimerCallback, null, TimeSpan.FromSeconds(1), _geolocationRequirements.UpdateInterval);
+
+            
              return new ActionDisposable(() =>
              {
                  _logger.LogTrace("Disposing GpsLocationPublisher");
@@ -57,47 +65,38 @@ namespace Blauhaus.Geolocation
 
         private async void TimerCallback(object state)
         {
-            await UpdateSubscribersAsync(await GetAsync()); 
-        }
-
-        protected override async Task<IGpsLocation> GetAsync()
-        {
-            await UpdateLocationAsync();
-            if (_currentLocation == null)
-            {
-                _logger.LogWarning("No gps location available");
-                return GpsLocation.Default;
-            }
-            _logger.LogTrace("Publishing current location Lat {Latitude}, | Long {Longitude}", _currentLocation.Latitude, _currentLocation.Longitude);
-            return _currentLocation;
-        }
-
-
-        private async Task UpdateLocationAsync()
-        {
             try
             {
-                if (_currentLocation == null)
+                await _threadService.InvokeOnMainThreadAsync(async () =>
                 {
-                    await _threadService.InvokeOnMainThreadAsync(async () =>
-                    {
-                        var location =
-                            await Xamarin.Essentials.Geolocation.GetLocationAsync() ??
-                            await Xamarin.Essentials.Geolocation.GetLastKnownLocationAsync();
+                    var location =
+                        await Xamarin.Essentials.Geolocation.GetLocationAsync() ??
+                        await Xamarin.Essentials.Geolocation.GetLastKnownLocationAsync();
                         
-                        if (location != null)
-                        {
-                            _currentLocation = new GpsLocation(location.Latitude, location.Longitude);
-                        }
-                    });
-
-                }
+                    if (location != null)
+                    {
+                        _currentLocation = new GpsLocation(location.Latitude, location.Longitude);
+                        await UpdateSubscribersAsync(_currentLocation); 
+                    }
+                });
+                
             }
             catch (Exception e)
             {              
                 _logger.LogError(GeolocationError.Unexpected, e);
             }
-     
         }
+
+        protected override Task<IGpsLocation> GetAsync()
+        {
+            if (_currentLocation == null)
+            {
+                _logger.LogWarning("No gps location available");
+                return Task.FromResult<IGpsLocation>(GpsLocation.Default);
+            }
+            _logger.LogTrace("Publishing current location Lat {Latitude}, | Long {Longitude}", _currentLocation.Latitude, _currentLocation.Longitude);
+            return Task.FromResult<IGpsLocation>(_currentLocation);
+        }
+         
     }
 }
