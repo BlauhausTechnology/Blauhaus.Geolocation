@@ -45,7 +45,7 @@ namespace Blauhaus.Geolocation.Tests.Tests.GeolocationServiceTests
             {
                 //Arrange 
                 MockDevicePermissionsService.Mock.Setup(x => x.EnsurePermissionGrantedAsync(DevicePermission.LocationWhenInUse))
-                    .ReturnsAsync(Response.Failure(Errors.Errors.Cancelled));
+                    .ReturnsAsync(Response.Failure(Error.Cancelled));
 
                 //Act
                 var result = await Sut.GetCurrentLocationAsync();
