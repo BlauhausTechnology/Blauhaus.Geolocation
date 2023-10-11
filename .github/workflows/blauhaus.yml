@@ -7,13 +7,17 @@ on:
 jobs:
 
   build:
-     runs-on: ubuntu-latest
+     runs-on: macos-latest
      steps:
      - uses: actions/checkout@v1
      - name: Set Version
        run: |
         npm install @actions/core --save
         node ./scripts/getversion.js
+     - uses: actions/setup-dotnet@v1
+       with:
+         dotnet-version: '7.x'
+         include-prerelease: true
      - name: Install MAUI Workloads
        run: |
          dotnet workload install maui --ignore-failed-sources  
