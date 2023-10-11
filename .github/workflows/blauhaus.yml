@@ -7,7 +7,7 @@ on:
 jobs:
 
   build:
-     runs-on: ubuntu-latest
+     runs-on: macos-latest
      steps:
      - uses: actions/checkout@v1
      - name: Set Version
@@ -30,7 +30,4 @@ jobs:
         dotnet pack ./src/Blauhaus.Geolocation.Maui/Blauhaus.Geolocation.Maui.csproj -p:PackageVersion=${VERSION_NAME} --no-build --output ./ --configuration Release 
      - name: Deploy NuGet Package
        run:  |
-        dotnet nuget push /home/runner/work/Blauhaus.Geolocation/Blauhaus.Geolocation/Blauhaus.Geolocation.Abstractions.${VERSION_NAME}.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
-        dotnet nuget push /home/runner/work/Blauhaus.Geolocation/Blauhaus.Geolocation/Blauhaus.Geolocation.TestHelpers.${VERSION_NAME}.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
-        dotnet nuget push /home/runner/work/Blauhaus.Geolocation/Blauhaus.Geolocation/Blauhaus.Geolocation.${VERSION_NAME}.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
-        dotnet nuget push /home/runner/work/Blauhaus.Geolocation/Blauhaus.Geolocation/Blauhaus.Geolocation.Maui.${VERSION_NAME}.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+         dotnet nuget push "**/*.nupkg" -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
