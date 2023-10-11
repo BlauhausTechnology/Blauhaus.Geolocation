@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blauhaus.Common.ValueObjects" Version="2.2.11" />
+    <PackageReference Include="Blauhaus.Common.ValueObjects" Version="2.3.19" />
     <PackageReference Include="Blauhaus.Errors" Version="0.4.11" />
     <PackageReference Include="Blauhaus.Responses" Version="0.4.11" />
   </ItemGroup>

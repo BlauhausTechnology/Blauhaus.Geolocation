@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <UseMauiEssentials>true</UseMauiEssentials>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include=".Ioc\ServiceCollectionExtensions.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Blauhaus.Analytics.Abstractions" Version="2.0.15" />
+		<PackageReference Include="Blauhaus.DeviceServices.Maui" Version="1.2.30" />
+		<PackageReference Include="Blauhaus.Reactive" Version="0.0.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Blauhaus.Geolocation.Abstractions\Blauhaus.Geolocation.Abstractions.csproj" />
+	</ItemGroup>
+
+</Project>
