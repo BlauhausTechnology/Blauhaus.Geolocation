@@ -14,6 +14,9 @@ jobs:
        run: |
         npm install @actions/core --save
         node ./scripts/getversion.js
+     - name: Install MAUI Workloads
+       run: |
+         dotnet workload install maui --ignore-failed-sources  
      - name: Build NuGet Package
        run: |
         dotnet build ./src/Blauhaus.Geolocation.sln --configuration Release
